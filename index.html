@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Arsip Digital SDN 22 TK</title>
+    <!-- Favicon Logo -->
+    <link rel="icon" type="image/png" href="https://iili.io/By8FQ7s.png">
+
+    <!-- PWA & Mobile Capabilities -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Arsip SDN 22 TK">
+    <meta name="theme-color" content="#1e3a8a">
+
+    <!-- Manifest Inline untuk PWA / Standalone App (Support Chrome, Edge, Chromebook, Android, iOS) -->
+    <link rel="manifest" href='data:application/manifest+json,{"name":"Sistem Arsip Digital SDN 22 TK","short_name":"Arsip SDN 22 TK","description":"Aplikasi Pengelolaan Arsip Digital SDN 22 TK","start_url":".","display":"standalone","background_color":"#1e3a8a","theme_color":"#1e3a8a","icons":[{"src":"https://iili.io/By8FQ7s.png","sizes":"512x512","type":"image/png"}]}'>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font - Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        navy: {
+                            50: '#f0f4f9',
+                            100: '#e1e9f3',
+                            500: '#1e40af',
+                            600: '#1d4ed8',
+                            700: '#1e3a8a',
+                            800: '#0f172a',
+                            900: '#0b1120',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom 3D Neumorphism & Depth Styles with iOS / macOS Easing */
+        :root {
+            --ios-ease: cubic-bezier(0.25, 1, 0.5, 1);
+            --ios-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        body {
+            background-color: #e6eef8;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            color: #1e293b;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* 3D Elements Styling with macOS Glass & Depth */
+        .neumorph-3d {
+            background: linear-gradient(145deg, rgba(240, 247, 255, 0.9), rgba(217, 229, 243, 0.85));
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: 8px 8px 18px #b8c7d9, -8px -8px 18px #ffffff;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            transition: all 0.4s var(--ios-ease);
+        }
+
+        .neumorph-3d-inset {
+            background: #e6eef8;
+            box-shadow: inset 5px 5px 10px #b8c7d9, inset -5px -5px 10px #ffffff;
+            border-radius: 14px;
+        }
+
+        /* iOS Spring Buttons */
+        .btn-3d-primary {
+            background: linear-gradient(145deg, #2563eb, #1d4ed8);
+            box-shadow: 0 6px 0 #1e40af, 0 10px 15px rgba(37, 99, 235, 0.35);
+            transition: all 0.3s var(--ios-spring);
+        }
+        .btn-3d-primary:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 8px 0 #1e40af, 0 14px 22px rgba(37, 99, 235, 0.4);
+        }
+        .btn-3d-primary:active {
+            transform: translateY(3px) scale(0.97);
+            box-shadow: 0 2px 0 #1e40af, 0 4px 6px rgba(37, 99, 235, 0.2);
+        }
+
+        .btn-3d-danger {
+            background: linear-gradient(145deg, #ef4444, #dc2626);
+            box-shadow: 0 5px 0 #991b1b, 0 8px 12px rgba(239, 68, 68, 0.35);
+            transition: all 0.3s var(--ios-spring);
+        }
+        .btn-3d-danger:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 7px 0 #991b1b, 0 10px 16px rgba(239, 68, 68, 0.4);
+        }
+        .btn-3d-danger:active {
+            transform: translateY(3px) scale(0.97);
+            box-shadow: 0 2px 0 #991b1b, 0 3px 6px rgba(239, 68, 68, 0.2);
+        }
+
+        /* macOS Card Hover & Dynamic Spring */
+        .card-3d-hover {
+            transition: all 0.4s var(--ios-spring);
+        }
+        .card-3d-hover:hover {
+            transform: translateY(-6px) scale(1.015);
+            box-shadow: 14px 20px 32px #afbece, -12px -12px 28px #ffffff;
+        }
+
+        /* macOS Glass Sidebar Effect */
+        .sidebar-3d {
+            background: linear-gradient(180deg, rgba(30, 58, 138, 0.95) 0%, rgba(29, 78, 216, 0.95) 100%);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            box-shadow: 10px 0 30px rgba(30, 58, 138, 0.2);
+        }
+
+        .sidebar-item {
+            transition: all 0.3s var(--ios-ease);
+            border-radius: 14px;
+        }
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(4px);
+        }
+        .sidebar-item.active {
+            background: rgba(255, 255, 255, 0.22);
+            box-shadow: inset 1px 1px 3px rgba(255, 255, 255, 0.3), inset -1px -1px 3px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            transform: translateX(6px);
+        }
+        .sidebar-item:active {
+            transform: scale(0.96) translateX(4px);
+        }
+
+        /* iOS View Switch Smooth Animation */
+        .view-transition {
+            animation: iosFadeScale 0.45s var(--ios-ease) forwards;
+        }
+
+        @keyframes iosFadeScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.96) translateY(10px);
+                filter: blur(4px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        /* iOS Dynamic Toast Popup Animation */
+        @keyframes iosToastIn {
+            0% { 
+                transform: translateY(-20px) scale(0.9); 
+                opacity: 0; 
+                filter: blur(5px);
+            }
+            60% { 
+                transform: translateY(4px) scale(1.02); 
+            }
+            100% { 
+                transform: translateY(0) scale(1); 
+                opacity: 1; 
+                filter: blur(0);
+            }
+        }
+        .toast-animate {
+            animation: iosToastIn 0.45s var(--ios-spring) forwards;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Toast Alert Container -->
+    <div id="toastContainer" class="fixed top-5 right-5 z-50 flex flex-col gap-3"></div>
+
+    <!-- MODAL LOADING MEMUAT DATA ARSIP (3D MODAL POPUP) -->
+    <div id="loadingOverlay" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md hidden transition-all duration-300">
+        <div class="w-full max-w-sm p-8 neumorph-3d bg-white text-center rounded-3xl shadow-2xl relative overflow-hidden border border-white">
+            <!-- Progress Circle Indicator -->
+            <div class="relative w-28 h-28 mx-auto mb-6 flex items-center justify-center">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <path class="text-slate-100" stroke-width="3.5" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="circleProgress" class="text-blue-600 transition-all duration-300 ease-out" stroke-linecap="round" stroke-width="3.5" stroke-dasharray="0, 100" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <div class="absolute flex items-center justify-center">
+                    <span id="loadingPercentText" class="text-2xl font-black text-slate-800">0%</span>
+                </div>
+            </div>
+
+            <!-- Loading Title & Subtitle -->
+            <h3 class="text-lg font-extrabold text-slate-800 tracking-tight">Memuat Data Arsip</h3>
+            <p id="loadingSubText" class="text-xs text-slate-500 font-medium mt-1">Menyinkronkan data ke aplikasi...</p>
+
+            <!-- Bottom Horizontal Progress Bar -->
+            <div class="w-full bg-slate-100 rounded-full h-2 mt-6 overflow-hidden">
+                <div id="lineProgressBar" class="bg-blue-600 h-full rounded-full transition-all duration-300 ease-out" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. HALAMAN LOGIN -->
+    <div id="loginScreen" class="fixed inset-0 z-40 flex items-center justify-center p-4 bg-gradient-to-br from-blue-900 via-blue-800 to-slate-900">
+        <div class="w-full max-w-md p-8 neumorph-3d bg-slate-50 text-slate-800 shadow-2xl relative overflow-hidden transform transition-all duration-300">
+            <!-- Decorative 3D Light Effect -->
+            <div class="absolute -top-12 -right-12 w-32 h-32 bg-blue-400 rounded-full blur-2xl opacity-40"></div>
+            
+            <div class="text-center mb-8 relative z-10">
+                <div class="w-24 h-24 mx-auto mb-4 bg-white/80 p-2 rounded-2xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-transform border border-blue-200">
+                    <img src="https://iili.io/By8FQ7s.png" alt="Logo SDN 22 TK" class="w-full h-full object-contain drop-shadow" onerror="this.onerror=null; this.src='https://placehold.co/100x100/1e40af/ffffff?text=SDN22TK';">
+                </div>
+                <h1 class="text-2xl font-extrabold text-blue-950">SDN 22 TANAH KERAS</h1>
+                <p class="text-xs text-blue-700 font-semibold tracking-wider uppercase mt-1">Sistem Informasi Arsip Digital</p>
+            </div>
+
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-6 relative z-10">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <i class="fa-solid fa-user text-sm"></i>
+                        </span>
+                        <input type="text" id="usernameInput" required value=""
+                            class="w-full pl-10 pr-4 py-3 bg-slate-100 text-slate-800 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-inner"
+                            placeholder="Masukkan Username">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-600 mb-2">Kata Sandi</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </span>
+                        <input type="password" id="passwordInput" required value=""
+                            class="w-full pl-10 pr-4 py-3 bg-slate-100 text-slate-800 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all shadow-inner"
+                            placeholder="Masukkan Password">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                    class="w-full py-3.5 text-white font-bold rounded-xl btn-3d-primary flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Masuk ke Sistem
+                </button>
+            </form>
+
+            <div class="mt-8 text-center text-xs text-slate-500">
+                &copy; 2026 SDN 22 TK. All rights reserved.
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN APP DASHBOARD STRUCTURE -->
+    <div id="appScreen" class="hidden min-h-screen flex flex-col md:flex-row">
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside class="w-full md:w-64 sidebar-3d text-white flex-shrink-0 flex flex-col justify-between p-4 z-20">
+            <div>
+                <!-- Brand Header -->
+                <div class="flex items-center gap-3 p-3 mb-6 bg-white/10 rounded-2xl border border-white/20 shadow-md">
+                    <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center p-1 shadow flex-shrink-0">
+                        <img src="https://iili.io/By8FQ7s.png" alt="Logo SDN 22 TK" class="w-full h-full object-contain" onerror="this.onerror=null; this.src='https://placehold.co/40x40/1e40af/ffffff?text=SDN';">
+                    </div>
+                    <div>
+                        <h2 class="font-bold leading-tight text-white">SDN 22 TK</h2>
+                        <p class="text-[10px] text-blue-200 font-medium tracking-wide">E-ARSIP SEKOLAH</p>
+                    </div>
+                </div>
+
+                <!-- Nav Menu -->
+            <nav class="space-y-2">
+                <button onclick="switchTab('dashboard')" id="nav-dashboard" 
+                    class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold active">
+                    <i class="fa-solid fa-chart-pie w-5"></i> Beranda
+                </button>
+
+                <button onclick="switchTab('upload')" id="nav-upload" 
+                    class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold">
+                    <i class="fa-solid fa-cloud-arrow-up w-5"></i> Kelola Arsip
+                </button>
+
+                <button onclick="switchTab('archive')" id="nav-archive" 
+                    class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold">
+                    <i class="fa-solid fa-folder-open w-5"></i> Daftar Arsip
+                </button>
+            </nav>
+        </div>
+
+        <!-- Bottom User & Sync Button -->
+        <div class="pt-4 border-t border-white/10 mt-6 space-y-3">
+            <button onclick="fetchArchivesFromSheets(true)" title="Sinkronkan Ulang Data"
+                class="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition">
+                <i class="fa-solid fa-rotate"></i> Sync Data
+            </button>
+            <div class="flex items-center justify-between p-2">
+                <div class="flex items-center gap-2">
+                        <div class="w-9 h-9 rounded-full bg-blue-300 border-2 border-white text-blue-900 font-bold flex items-center justify-center text-xs">
+                            ADM
+                        </div>
+                        <div class="text-xs">
+                            <p class="font-bold text-white">Admin Sekolah</p>
+                            <p class="text-[10px] text-blue-200">SDN 22 TK</p>
+                        </div>
+                    </div>
+                    <button onclick="handleLogout()" title="Keluar" 
+                        class="p-2 text-blue-200 hover:text-red-300 hover:bg-white/10 rounded-lg transition">
+                        <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="flex-1 p-4 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+
+            <!-- TOP HEADER BAR -->
+            <header class="neumorph-3d p-4 mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div>
+                    <h1 id="pageTitle" class="text-xl font-bold text-blue-950 flex items-center gap-2">
+                        <i class="fa-solid fa-chart-line text-blue-600"></i> Beranda Utama
+                    </h1>
+                    <p class="text-xs text-slate-500">Sistem Manajemen Kelola Arsip Digital SDN 22 TK</p>
+                </div>
+
+                <div class="flex items-center gap-4 w-full sm:w-auto justify-end">
+                <!-- Tombol Install PWA -->
+                <button id="pwaInstallBtn" onclick="installPWA()" class="hidden px-4 py-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold text-xs rounded-xl shadow-lg transition-all transform hover:-translate-y-0.5 flex items-center gap-2">
+                    <i class="fa-solid fa-download text-sm"></i> Instal Aplikasi
+                </button>
+
+                <div class="bg-blue-100/60 text-blue-800 text-xs font-semibold px-4 py-2 rounded-xl flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-check text-blue-600"></i>
+                    <span id="currentDate">-- -- ----</span>
+                </div>
+            </div>
+        </header>
+
+            <!-- VIEW 1: BERANDA / DASHBOARD -->
+            <section id="dashboardView" class="space-y-8">
+                <!-- Welcome Banner -->
+                <div class="neumorph-3d p-6 bg-gradient-to-r from-blue-700 to-indigo-700 text-white relative overflow-hidden">
+                    <div class="relative z-10 max-w-2xl">
+                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-medium tracking-wide">Selamat Datang 👋</span>
+                        <h2 class="text-2xl font-bold mt-2">Administrator SDN 22 TK</h2>
+                        <p class="text-sm text-blue-100 mt-1">Kelola dan amankan seluruh dokumen resmi sekolah, arsip kepegawaian, keuangan, dan data siswa dengan praktis dan terstruktur.</p>
+                        
+                        <div class="mt-5 flex gap-3">
+                            <button onclick="switchTab('upload')" class="px-4 py-2.5 bg-white text-blue-700 hover:bg-blue-50 font-bold rounded-xl text-xs shadow-md transition flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Tambah Arsip Baru
+                            </button>
+                            <button onclick="switchTab('archive')" class="px-4 py-2.5 bg-blue-800 text-white hover:bg-blue-900 font-bold rounded-xl text-xs shadow-md transition flex items-center gap-2">
+                                <i class="fa-solid fa-list"></i> Lihat Daftar Arsip
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Decorative Graphic -->
+                    <i class="fa-solid fa-box-archive absolute -right-6 -bottom-6 text-9xl text-white/10 pointer-events-none"></i>
+                </div>
+
+                <!-- 3D STATISTIC CARDS -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Total Arsip -->
+                    <div class="neumorph-3d p-5 card-3d-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Dokumen</p>
+                                <h3 id="statTotalCount" class="text-3xl font-black text-blue-950 mt-1">0</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-blue-500 text-white flex items-center justify-center text-xl shadow-md">
+                                <i class="fa-solid fa-file-lines"></i>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-blue-600 font-semibold mt-3 flex items-center gap-1">
+                            <i class="fa-solid fa-database"></i> Terdaftar di Local Storage
+                        </p>
+                    </div>
+
+                    <!-- Total Size -->
+                    <div class="neumorph-3d p-5 card-3d-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Total Ukuran</p>
+                                <h3 id="statTotalSize" class="text-3xl font-black text-blue-950 mt-1">0 MB</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-indigo-500 text-white flex items-center justify-center text-xl shadow-md">
+                                <i class="fa-solid fa-hard-drive"></i>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-indigo-600 font-semibold mt-3 flex items-center gap-1">
+                            <i class="fa-solid fa-circle-check"></i> Max 300MB / File
+                        </p>
+                    </div>
+
+                    <!-- Kategori Terbanyak -->
+                    <div class="neumorph-3d p-5 card-3d-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Utama</p>
+                                <h3 id="statTopCategory" class="text-lg font-bold text-blue-950 mt-2 truncate">-</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-teal-500 text-white flex items-center justify-center text-xl shadow-md">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-teal-600 font-semibold mt-3 flex items-center gap-1">
+                            <i class="fa-solid fa-tags"></i> Kategori Aktif
+                        </p>
+                    </div>
+
+                    <!-- Dokumen Terkini -->
+                    <div class="neumorph-3d p-5 card-3d-hover">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Update Terakhir</p>
+                                <h3 id="statLastUpdate" class="text-sm font-bold text-blue-950 mt-2 truncate">Belum ada</h3>
+                            </div>
+                            <div class="w-12 h-12 rounded-2xl bg-sky-500 text-white flex items-center justify-center text-xl shadow-md">
+                                <i class="fa-solid fa-clock-rotate-left"></i>
+                            </div>
+                        </div>
+                        <p class="text-[11px] text-sky-600 font-semibold mt-3 flex items-center gap-1">
+                            <i class="fa-solid fa-history"></i> Aktivitas Unggah
+                        </p>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- VIEW 2: KELOLA ARSIP (FORM UNGGAH) -->
+            <section id="uploadView" class="hidden space-y-8">
+                
+                <!-- FORM UPLOAD ARSIP 3D -->
+                <div class="neumorph-3d p-6 bg-white/60">
+                    <h3 class="text-lg font-bold text-blue-950 mb-4 flex items-center gap-2 border-b border-slate-200 pb-3">
+                        <i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Form Unggah Dokumen Arsip
+                    </h3>
+
+                    <form id="archiveForm" onsubmit="handleArchiveSubmit(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            
+                            <!-- Nama Dokumen -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Nama Dokumen / Judul <span class="text-red-500">*</span></label>
+                                <input type="text" id="docName" required 
+                                    class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all" 
+                                    placeholder="Contoh: SK Pengangkatan Guru 2026">
+                            </div>
+
+                            <!-- Tanggal Dokumen -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Tanggal Dokumen <span class="text-red-500">*</span></label>
+                                <input type="date" id="docDate" required 
+                                    class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all">
+                            </div>
+
+                            <!-- Kategori Dokumen (Input Manual Teks) -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Kategori Dokumen <span class="text-red-500">*</span></label>
+                                <input type="text" id="docCategory" required 
+                                    class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all" 
+                                    placeholder="Ketik Kategori (Misal: Surat Masuk, Keuangan, Ijazah, dll)">
+                            </div>
+
+                            <!-- Input Keterangan / Catatan Singkat -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Keterangan / Catatan Singkat</label>
+                                <input type="text" id="docDesc" 
+                                    class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all" 
+                                    placeholder="Catatan tambahan (Opsional)">
+                            </div>
+                        </div>
+
+                        <!-- UPLOAD FILE FIELD WITH MAX 300MB VALIDATION -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-2">
+                                Upload File Dokumen (Maksimal 300 MB) <span class="text-red-500">*</span>
+                            </label>
+                            
+                            <div class="relative border-2 border-dashed border-blue-300 rounded-2xl p-6 bg-blue-50/40 text-center hover:bg-blue-50 transition cursor-pointer"
+                                 onclick="document.getElementById('docFile').click()">
+                                <input type="file" id="docFile" required class="hidden" onchange="handleFileSelect(event)">
+                                
+                                <div id="uploadPlaceholder" class="space-y-2">
+                                    <div class="w-14 h-14 mx-auto bg-blue-500 text-white rounded-full flex items-center justify-center text-2xl shadow-lg">
+                                        <i class="fa-solid fa-file-circle-plus"></i>
+                                    </div>
+                                    <p class="text-sm font-semibold text-slate-700">Klik atau seret file ke area ini</p>
+                                    <p class="text-xs text-slate-500">Mendukung PDF, DOCX, XLSX, JPG, PNG, ZIP, RAR dll. (Max 300 MB)</p>
+                                </div>
+
+                                <!-- File Preview Status -->
+                                <div id="fileInfoBox" class="hidden text-left bg-white p-4 rounded-xl shadow-sm border border-slate-200">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center font-bold text-lg">
+                                                <i class="fa-solid fa-file text-blue-600"></i>
+                                            </div>
+                                            <div>
+                                                <p id="fileNameDisplay" class="text-sm font-bold text-slate-800 truncate max-w-xs">filename.pdf</p>
+                                                <p id="fileSizeDisplay" class="text-xs text-slate-500">0 MB</p>
+                                            </div>
+                                        </div>
+                                        <button type="button" onclick="cancelFileSelection(event)" class="text-red-500 hover:text-red-700 p-2">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                    <!-- Progress Bar Simulasi -->
+                                    <div id="progressWrapper" class="mt-3 hidden">
+                                        <div class="w-full bg-slate-200 rounded-full h-2 overflow-hidden">
+                                            <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                        </div>
+                                        <span id="progressText" class="text-[10px] text-slate-500 mt-1 block text-right">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex justify-end gap-3 pt-3">
+                            <button type="reset" onclick="resetFileField()" class="px-5 py-3 text-sm font-bold text-slate-600 bg-slate-200 rounded-xl hover:bg-slate-300 transition">
+                                Reset Form
+                            </button>
+                            <button type="submit" class="px-6 py-3 text-sm text-white font-bold rounded-xl btn-3d-primary flex items-center gap-2">
+                                <i class="fa-solid fa-cloud-arrow-up"></i> Simpan & Unggah Arsip
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </section>
+
+            <!-- VIEW 3: DAFTAR ARSIP (NAVIGASI TERSENDIRI) -->
+            <section id="archiveView" class="hidden space-y-8">
+
+                <!-- TABLE DAFTAR ARSIP -->
+                <div class="neumorph-3d p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-blue-950 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-blue-600"></i> Daftar Data Arsip Terdaftar
+                            </h3>
+                            <p class="text-xs text-slate-500">Cari, filter, dan unduh dokumen arsip yang telah tersimpan.</p>
+                        </div>
+
+                        <!-- Search & Filter Bar -->
+                        <div class="flex flex-col sm:flex-row items-center gap-3">
+                            <!-- Search -->
+                            <div class="relative w-full sm:w-64">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
+                                <input type="text" id="searchInput" oninput="filterArchives()" 
+                                    class="w-full pl-9 pr-4 py-2 bg-slate-100 border border-slate-300 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="Cari nama dokumen atau kategori...">
+                            </div>
+
+                            <!-- Filter Category (Dinamis / Teks Bebas) -->
+                            <div class="relative w-full sm:w-48">
+                                <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-400 text-xs"></i>
+                                <input type="text" id="filterCategory" oninput="filterArchives()" 
+                                    class="w-full pl-8 pr-3 py-2 bg-slate-100 border border-slate-300 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="Filter kategori...">
+                            </div>
+
+                            <button onclick="switchTab('upload')" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-plus"></i> Tambah Arsip
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Table -->
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-inner">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-blue-900 text-white text-xs uppercase font-bold tracking-wider">
+                                    <th class="p-3.5">No</th>
+                                    <th class="p-3.5">Nama Dokumen</th>
+                                    <th class="p-3.5">Tanggal</th>
+                                    <th class="p-3.5">Kategori</th>
+                                    <th class="p-3.5">Ukuran Berkas</th>
+                                    <th class="p-3.5 text-center">Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="archiveTableBody" class="text-sm bg-white divide-y divide-slate-100">
+                                <!-- Data Arsip Dinamis -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Empty State Marker -->
+                    <div id="emptyState" class="hidden py-12 text-center">
+                        <div class="w-16 h-16 mx-auto bg-slate-200 text-slate-400 rounded-full flex items-center justify-center text-2xl mb-3">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <p class="text-slate-600 font-semibold text-sm">Tidak ada dokumen arsip ditemukan</p>
+                        <p class="text-xs text-slate-400 mt-1">Silakan unggah dokumen baru melalui menu Kelola Arsip.</p>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC & GOOGLE APPS SCRIPT INTEGRATION -->
+    <script>
+        /* ========================================================================
+         * KODE GOOGLE APPS SCRIPT (BACKEND GOOGLE SHEETS & DRIVE):
+         * 
+         * Salin (copy) kode di bawah ini ke editor Ekstensi > Apps Script di Google Sheets Anda:
+         * ------------------------------------------------------------------------
+         * 
+         * function doPost(e) {
+         *   try {
+         *     var data = JSON.parse(e.postData.contents);
+         *     var ss = SpreadsheetApp.getActiveSpreadsheet();
+         *     
+         *     // 1. Buat / Ambil Sheet 'Arsip' secara otomatis
+         *     var sheet = ss.getSheetByName("Arsip");
+         *     if (!sheet) {
+         *       sheet = ss.insertSheet("Arsip");
+         *       // Buat Header Tabel otomatis
+         *       sheet.appendRow(["Timestamp", "Nama Dokumen", "Tanggal", "Kategori Dokumen", "Keterangan", "Ukuran File", "Nama File", "Link File Google Drive"]);
+         *       sheet.getRange(1, 1, 1, 8).setFontWeight("bold").setBackground("#1e40af").setFontColor("#ffffff");
+         *     }
+         *     
+         *     // 2. Buat / Ambil Folder 'ARSIP SDN 22 TK' di Google Drive secara otomatis
+         *     var folderName = "ARSIP SDN 22 TK";
+         *     var folders = DriveApp.getFoldersByName(folderName);
+         *     var folder;
+         *     if (folders.hasNext()) {
+         *       folder = folders.next();
+         *     } else {
+         *       folder = DriveApp.createFolder(folderName);
+         *     }
+         *     
+         *     // 3. Simpan File ke Google Drive (mengubah Base64 kembali ke File Blob)
+         *     var fileUrl = "-";
+         *     if (data.fileData && data.fileName) {
+         *       var bytes = Utilities.base64Decode(data.fileData);
+         *       var blob = Utilities.newBlob(bytes, data.mimeType || 'application/octet-stream', data.fileName);
+         *       var uploadedFile = folder.createFile(blob);
+         *       
+         *       // Set akses file agar bisa dibaca/didownload via link
+         *       uploadedFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+         *       fileUrl = uploadedFile.getUrl();
+         *     }
+         *     
+         *     // 4. Catat baris data baru ke Sheet 'Arsip'
+         *     sheet.appendRow([
+         *       new Date(),
+         *       data.name,
+         *       data.date,
+         *       data.category,
+         *       data.desc,
+         *       data.size,
+         *       data.fileName,
+         *       fileUrl
+         *     ]);
+         *     
+         *     return ContentService.createTextOutput(JSON.stringify({ result: "success", fileUrl: fileUrl }))
+         *       .setMimeType(ContentService.MimeType.JSON);
+         *       
+         *   } catch (err) {
+         *     return ContentService.createTextOutput(JSON.stringify({ result: "error", error: err.toString() }))
+         *       .setMimeType(ContentService.MimeType.JSON);
+         *   }
+         * }
+         * 
+         * function doGet(e) {
+         *   return ContentService.createTextOutput("Service Web App Arsip SDN 22 TK Aktif");
+         * }
+         * 
+        /* ------------------------------------------------------------------------
+         * LANGKAH DEPLOYMENT:
+         * 1. Klik menu "Deploy" (Terapkan) > "Deployment baru" (New deployment).
+         * 2. Pilih Jenis Deployment: "Web App" (Aplikasi Web).
+         * 3. Set "Execute as" (Jalankan sebagai): "Me" (Saya).
+         * 4. Set "Who has access" (Siapa yang memiliki akses): "Anyone" (Siapa saja).
+         * 5. Klik "Deploy", beri izin akses Google Drive & Sheets.
+         * 6. Salin URL Web App dan tempelkan pada variabel SCRIPT_URL di bawah ini.
+         * ======================================================================== */
+        
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHzw-zZHKW1JEKj54u7x3TVFP_avT9JOsodrPAgWIpIw5AO93GQKQ8FdnzZ1rx_o7w/exec';
+
+        // Constants
+        const MAX_FILE_SIZE_BYTES = 300 * 1024 * 1024; // 300 Megabytes
+        let selectedFile = null;
+
+        // Global State
+        let archives = [];
+        let deferredPrompt = null;
+
+        // PWA Install Prompt Listener (Chrome, Edge, Chromebook)
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) {
+                installBtn.classList.remove('hidden');
+            }
+        });
+
+        async function installPWA() {
+            if (!deferredPrompt) {
+                showToast('Aplikasi sudah terinstal atau peramban tidak mendukung PWA.', 'info');
+                return;
+            }
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                showToast('Aplikasi SDN 22 TK berhasil diinstal!', 'success');
+                document.getElementById('pwaInstallBtn').classList.add('hidden');
+            }
+            deferredPrompt = null;
+        }
+
+        window.addEventListener('appinstalled', () => {
+            deferredPrompt = null;
+            const installBtn = document.getElementById('pwaInstallBtn');
+            if (installBtn) installBtn.classList.add('hidden');
+            showToast('Aplikasi SDN 22 TK telah terpasang di perangkat Anda!', 'success');
+        });
+
+        // Application Initialization
+        window.addEventListener('DOMContentLoaded', () => {
+            // Set Today Date Display
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', options);
+
+            // Set default date picker to today
+            document.getElementById('docDate').valueAsDate = new Date();
+
+            // Load Data from LocalStorage
+            loadArchives();
+
+            // Check Session Login State
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                showAppScreen();
+            }
+        });
+
+        // --- AUTHENTICATION MODULE ---
+        async function handleLogin(e) {
+            e.preventDefault();
+            const usernameInput = document.getElementById('usernameInput').value.trim();
+            const passwordInput = document.getElementById('passwordInput').value.trim();
+
+            if (usernameInput === 'SDN22TK' && passwordInput === '12345') {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                
+                // Tampilkan Loading Popup "Memuat Data Arsip" & Fetch dari Sheets
+                await fetchArchivesFromSheets();
+
+                showToast('Berhasil Login! Selamat Datang di Sistem SDN 22 TK.', 'success');
+                showAppScreen();
+            } else {
+                showToast('Username atau Kata Sandi Salah! Silakan coba lagi.', 'danger');
+            }
+        }
+
+        // --- FETCH DATA ARSIP DARI GOOGLE SHEETS VIA APPS SCRIPT ---
+        async function fetchArchivesFromSheets(manualSync = false) {
+            const overlay = document.getElementById('loadingOverlay');
+            const circle = document.getElementById('circleProgress');
+            const line = document.getElementById('lineProgressBar');
+            const percentText = document.getElementById('loadingPercentText');
+            const subText = document.getElementById('loadingSubText');
+
+            overlay.classList.remove('hidden');
+
+            // Animation Helper
+            const updateProgress = (val, text) => {
+                percentText.textContent = `${val}%`;
+                circle.setAttribute('stroke-dasharray', `${val}, 100`);
+                line.style.width = `${val}%`;
+                if (text) subText.textContent = text;
+            };
+
+            updateProgress(15, 'Menghubungkan ke Google Sheets...');
+
+            try {
+                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+                    updateProgress(45, 'Sedang Mengambil data');
+                    
+                    const response = await fetch(SCRIPT_URL + '?action=getData');
+                    const responseText = await response.text();
+
+                    updateProgress(75, 'Memproses data dokumen...');
+
+                    let data;
+                    try {
+                        data = JSON.parse(responseText);
+                    } catch (parseError) {
+                        console.error("Respon dari Google Apps Script bukan format JSON valid:", responseText);
+                        throw new Error("Penerbitan (Deploy) Google Apps Script perlu diperbarui atau belum diset ke 'Anyone'.");
+                    }
+
+                    if (Array.isArray(data)) {
+                        archives = data;
+                        saveArchivesToStorage();
+                    } else if (data && data.error) {
+                        console.error("Error dari Apps Script:", data.error);
+                    }
+                } else {
+                    updateProgress(60, 'Memuat data lokal...');
+                    await new Promise(r => setTimeout(r, 400));
+                }
+            } catch (err) {
+                console.error("Gagal sinkronisasi Sheets:", err);
+                updateProgress(80, 'Gagal terhubung, memuat data lokal...');
+                await new Promise(r => setTimeout(r, 300));
+            }
+
+            updateProgress(100, 'Sinkronisasi Selesai!');
+            await new Promise(r => setTimeout(r, 400));
+
+            overlay.classList.add('hidden');
+
+            if (manualSync) {
+                renderDashboard();
+                renderArchiveTable();
+                showToast('Data Arsip berhasil disinkronkan!', 'success');
+            }
+        }
+
+        function handleLogout() {
+            sessionStorage.removeItem('isLoggedIn');
+            
+            // Dikosongkan secara otomatis saat keluar (logout) demi keamanan
+            document.getElementById('usernameInput').value = '';
+            document.getElementById('passwordInput').value = '';
+            
+            document.getElementById('appScreen').classList.add('hidden');
+            document.getElementById('loginScreen').classList.remove('hidden');
+            showToast('Anda telah berhasil keluar dari sistem.', 'info');
+        }
+
+        function showAppScreen() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('appScreen').classList.remove('hidden');
+            renderDashboard();
+            renderArchiveTable();
+        }
+
+        // --- NAVIGATION SYSTEM ---
+        function switchTab(tabName) {
+            const dashboardView = document.getElementById('dashboardView');
+            const uploadView = document.getElementById('uploadView');
+            const archiveView = document.getElementById('archiveView');
+            
+            const navDashboard = document.getElementById('nav-dashboard');
+            const navUpload = document.getElementById('nav-upload');
+            const navArchive = document.getElementById('nav-archive');
+            
+            const pageTitle = document.getElementById('pageTitle');
+
+            // Reset all active classes & views
+            [dashboardView, uploadView, archiveView].forEach(view => {
+                view.classList.add('hidden');
+                view.classList.remove('view-transition');
+            });
+            [navDashboard, navUpload, navArchive].forEach(nav => nav.classList.remove('active'));
+
+            let activeView = null;
+
+            if (tabName === 'dashboard') {
+                activeView = dashboardView;
+                navDashboard.classList.add('active');
+                pageTitle.innerHTML = `<i class="fa-solid fa-chart-line text-blue-600"></i> Beranda Utama`;
+                renderDashboard();
+            } else if (tabName === 'upload') {
+                activeView = uploadView;
+                navUpload.classList.add('active');
+                pageTitle.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Form Unggah Arsip`;
+            } else if (tabName === 'archive') {
+                activeView = archiveView;
+                navArchive.classList.add('active');
+                pageTitle.innerHTML = `<i class="fa-solid fa-folder-open text-blue-600"></i> Navigasi & Daftar Arsip`;
+                renderArchiveTable();
+            }
+
+            if (activeView) {
+                activeView.classList.remove('hidden');
+                // Trigger iOS smooth view transition
+                void activeView.offsetWidth; // Reflow trigger
+                activeView.classList.add('view-transition');
+            }
+        }
+
+        // --- FILE SELECTION & VALIDATION (MAX 300 MB) ---
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Validation: Max 300 MB
+            if (file.size > MAX_FILE_SIZE_BYTES) {
+                showToast(`Ukuran berkas melebihi batas maksimal 300 MB! (${formatBytes(file.size)})`, 'danger');
+                event.target.value = '';
+                return;
+            }
+
+            selectedFile = file;
+            document.getElementById('uploadPlaceholder').classList.add('hidden');
+            document.getElementById('fileInfoBox').classList.remove('hidden');
+            document.getElementById('fileNameDisplay').textContent = file.name;
+            document.getElementById('fileSizeDisplay').textContent = formatBytes(file.size);
+        }
+
+        function cancelFileSelection(e) {
+            if(e) e.stopPropagation();
+            resetFileField();
+        }
+
+        function resetFileField() {
+            selectedFile = null;
+            document.getElementById('docFile').value = '';
+            document.getElementById('uploadPlaceholder').classList.remove('hidden');
+            document.getElementById('fileInfoBox').classList.add('hidden');
+            document.getElementById('progressWrapper').classList.add('hidden');
+            document.getElementById('progressBar').style.width = '0%';
+        }
+
+        // --- DATA ARCHIVE OPERATIONS ---
+        function loadArchives() {
+            const stored = localStorage.getItem('sdn22tk_archives');
+            if (stored) {
+                try {
+                    archives = JSON.parse(stored);
+                } catch (e) {
+                    archives = [];
+                }
+            } else {
+                archives = [];
+                saveArchivesToStorage();
+            }
+        }
+
+        function saveArchivesToStorage() {
+            localStorage.setItem('sdn22tk_archives', JSON.stringify(archives));
+        }
+
+        // Helper Konversi File Ke Base64 untuk dikirim via fetch
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve(base64String);
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        async function handleArchiveSubmit(e) {
+            e.preventDefault();
+
+            if (!selectedFile) {
+                showToast('Silakan pilih berkas yang akan diunggah!', 'danger');
+                return;
+            }
+
+            const name = document.getElementById('docName').value.trim();
+            const date = document.getElementById('docDate').value;
+            const category = document.getElementById('docCategory').value.trim();
+            const desc = document.getElementById('docDesc').value.trim();
+
+            // Progress Bar Simulation
+            const progressWrapper = document.getElementById('progressWrapper');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            progressWrapper.classList.remove('hidden');
+
+            for (let percent = 0; percent <= 60; percent += 20) {
+                progressBar.style.width = percent + '%';
+                progressText.textContent = `Mempersiapkan Berkas... ${percent}%`;
+                await new Promise(r => setTimeout(r, 60));
+            }
+
+            let fileDriveUrl = '#';
+            let fileBase64 = null;
+
+            try {
+                // Konversi file ke format Base64
+                fileBase64 = await fileToBase64(selectedFile);
+                progressBar.style.width = '80%';
+                progressText.textContent = `Mengirim Berkas ke Drive... 80%`;
+            } catch (err) {
+                console.error("Gagal memproses file:", err);
+            }
+
+            // Object Record untuk Aplikasi
+            const newArchive = {
+                id: Date.now().toString(),
+                name: name,
+                date: date,
+                category: category,
+                size: formatBytes(selectedFile.size),
+                fileName: selectedFile.name,
+                desc: desc || '-',
+                fileUrl: '#'
+            };
+
+            // Jika Google Apps Script URL telah disiapkan
+            if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+                const payload = {
+                    name: name,
+                    date: date,
+                    category: category,
+                    desc: desc || '-',
+                    size: formatBytes(selectedFile.size),
+                    fileName: selectedFile.name,
+                    mimeType: selectedFile.type,
+                    fileData: fileBase64
+                };
+
+                const driveResultUrl = await sendToGoogleAppsScript(payload);
+                if (driveResultUrl) {
+                    newArchive.fileUrl = driveResultUrl;
+                }
+            }
+
+            progressBar.style.width = '100%';
+            progressText.textContent = `Selesai! 100%`;
+
+            // Save Local
+            archives.unshift(newArchive);
+            saveArchivesToStorage();
+
+            showToast('Dokumen Arsip Berhasil Diunggah & Disimpan!', 'success');
+            
+            // Reset Form & UI
+            document.getElementById('archiveForm').reset();
+            document.getElementById('docDate').valueAsDate = new Date();
+            resetFileField();
+
+            // Pindah langsung ke menu Daftar Arsip setelah sukses upload
+            switchTab('archive');
+        }
+
+        // Send Data & File Base64 to Google Apps Script Endpoint
+        async function sendToGoogleAppsScript(payloadData) {
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payloadData)
+                });
+                const result = await response.json();
+                if (result.result === "success" && result.fileUrl) {
+                    console.log("File berhasil diunggah ke Drive:", result.fileUrl);
+                    return result.fileUrl;
+                }
+            } catch (error) {
+                console.error("Sinkronisasi Google Apps Script:", error);
+            }
+            return null;
+        }
+
+        function deleteArchive(id) {
+            if (confirm('Apakah Anda yakin ingin menghapus data arsip ini dari daftar aplikasi?')) {
+                archives = archives.filter(item => item.id !== id);
+                saveArchivesToStorage();
+                renderArchiveTable();
+                showToast('Data arsip berhasil dihapus.', 'info');
+            }
+        }
+
+        function openOrDownloadFile(fileUrl, fileName) {
+            if (fileUrl && fileUrl !== '#') {
+                window.open(fileUrl, '_blank');
+            } else {
+                showToast(`Simulasi Berkas Local: ${fileName} (Hubungkan Apps Script untuk mengunduh berkas langsung dari Drive)`, 'info');
+            }
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderArchiveTable() {
+            const tbody = document.getElementById('archiveTableBody');
+            const emptyState = document.getElementById('emptyState');
+            const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || '';
+            const categoryVal = document.getElementById('filterCategory')?.value.toLowerCase() || '';
+
+            tbody.innerHTML = '';
+
+            let filtered = archives.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(searchVal) || item.fileName.toLowerCase().includes(searchVal);
+                const matchCategory = !categoryVal || item.category.toLowerCase().includes(categoryVal);
+                return matchSearch && matchCategory;
+            });
+
+            if (filtered.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            filtered.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-blue-50/50 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3.5 font-bold text-slate-500">${index + 1}</td>
+                    <td class="p-3.5">
+                        <div class="font-bold text-slate-800">${escapeHtml(item.name)}</div>
+                        <div class="text-xs text-slate-400 flex items-center gap-1">
+                            <i class="fa-solid fa-paperclip"></i> ${escapeHtml(item.fileName)}
+                        </div>
+                    </td>
+                    <td class="p-3.5 text-xs font-semibold text-slate-600">${formatDateID(item.date)}</td>
+                    <td class="p-3.5">
+                        <span class="px-2.5 py-1 text-xs font-bold rounded-lg ${getCategoryBadgeColor(item.category)}">
+                            ${escapeHtml(item.category)}
+                        </span>
+                    </td>
+                    <td class="p-3.5 text-xs font-medium text-slate-600">${item.size}</td>
+                    <td class="p-3.5 text-center">
+                        <div class="flex items-center justify-center gap-2">
+                            <button onclick="viewFile('${item.fileUrl}', '${escapeHtml(item.fileName)}')" 
+                                class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition" title="Lihat Berkas Drive">
+                                <i class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="downloadFileDirect('${item.fileUrl}', '${escapeHtml(item.fileName)}')" 
+                                class="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition" title="Download Langsung File">
+                                <i class="fa-solid fa-download"></i>
+                            </button>
+                            <button onclick="deleteArchive('${item.id}')" 
+                                class="p-2 text-red-500 hover:bg-red-100 rounded-lg transition" title="Hapus Arsip">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterArchives() {
+            renderArchiveTable();
+        }
+
+        // --- UTILITY FUNGSI SEE & DOWNLOAD FILE ---
+        function viewFile(fileUrl, fileName) {
+            if (fileUrl && fileUrl !== '#') {
+                window.open(fileUrl, '_blank');
+            } else {
+                showToast(`Data simulasi lokal: Berkas ${fileName} belum terhubung ke Google Drive.`, 'info');
+            }
+        }
+
+        function downloadFileDirect(fileUrl, fileName) {
+            if (!fileUrl || fileUrl === '#') {
+                showToast(`Tidak dapat mengunduh: File ${fileName} belum memiliki link Drive.`, 'danger');
+                return;
+            }
+
+            try {
+                let directDownloadUrl = fileUrl;
+
+                // Ekstrak File ID dari URL Google Drive jika berupa URL View/Preview
+                const driveMatch = fileUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || fileUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                
+                if (driveMatch && driveMatch[1]) {
+                    const fileId = driveMatch[1];
+                    // Format Direct Download Google Drive
+                    directDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
+                }
+
+                // Buat elemen anchor sementara untuk memicu download otomatis
+                const a = document.createElement('a');
+                a.href = directDownloadUrl;
+                a.target = '_blank';
+                a.download = fileName || 'Arsip-SDN22TK';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+
+                showToast(`Proses unduh berkas ${fileName} dimulai...`, 'success');
+
+            } catch (err) {
+                console.error("Gagal mengunduh file:", err);
+                // Fallback buka URL jika browser memblokir download otomatis
+                window.open(fileUrl, '_blank');
+            }
+        }
+
+        function renderDashboard() {
+            document.getElementById('statTotalCount').textContent = archives.length;
+
+            // Calculate total size estimation
+            let totalMB = 0;
+            archives.forEach(a => {
+                const parts = a.size.split(' ');
+                if (parts.length === 2) {
+                    const num = parseFloat(parts[0]);
+                    const unit = parts[1].toUpperCase();
+                    if (unit === 'KB') totalMB += num / 1024;
+                    else if (unit === 'MB') totalMB += num;
+                    else if (unit === 'GB') totalMB += num * 1024;
+                }
+            });
+            document.getElementById('statTotalSize').textContent = totalMB.toFixed(1) + ' MB';
+
+            // Top Category calculation
+            if (archives.length > 0) {
+                const counts = {};
+                archives.forEach(a => counts[a.category] = (counts[a.category] || 0) + 1);
+                const topCat = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+                document.getElementById('statTopCategory').textContent = topCat;
+                document.getElementById('statLastUpdate').textContent = formatDateID(archives[0].date);
+            } else {
+                document.getElementById('statTopCategory').textContent = '-';
+                document.getElementById('statLastUpdate').textContent = 'Belum ada';
+            }
+        }
+
+        // --- UTILITY HELPER FUNCTIONS ---
+        function formatBytes(bytes, decimals = 2) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const dm = decimals < 0 ? 0 : decimals;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+        }
+
+        function formatDateID(dateString) {
+            if (!dateString) return '-';
+            const d = new Date(dateString);
+            if (isNaN(d.getTime())) return dateString;
+            return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function getCategoryBadgeColor(cat) {
+            const catLower = (cat || '').toLowerCase();
+            if (catLower.includes('masuk')) return 'bg-emerald-100 text-emerald-800';
+            if (catLower.includes('keluar')) return 'bg-blue-100 text-blue-800';
+            if (catLower.includes('siswa')) return 'bg-purple-100 text-purple-800';
+            if (catLower.includes('uang')) return 'bg-amber-100 text-amber-800';
+            if (catLower.includes('pegawai')) return 'bg-indigo-100 text-indigo-800';
+            return 'bg-slate-200 text-slate-700';
+        }
+
+        function escapeHtml(str) {
+            return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            
+            let bgClass = 'bg-blue-600 text-white';
+            let icon = 'fa-circle-info';
+            if (type === 'success') {
+                bgClass = 'bg-emerald-600 text-white';
+                icon = 'fa-circle-check';
+            } else if (type === 'danger') {
+                bgClass = 'bg-red-600 text-white';
+                icon = 'fa-triangle-exclamation';
+            }
+
+            toast.className = `toast-animate px-4 py-3 rounded-xl shadow-xl font-semibold text-xs flex items-center gap-3 ${bgClass} border border-white/20`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i> <span>${message}</span>`;
+            
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.remove();
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
