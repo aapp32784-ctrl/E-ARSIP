@@ -125,6 +125,16 @@
             box-shadow: 10px 0 30px rgba(30, 58, 138, 0.2);
         }
 
+        /* Responsive Height Lock & Custom Scrollbar for Sidebar */
+        @media (min-width: 768px) {
+            .sidebar-3d {
+                position: sticky;
+                top: 0;
+                height: 100vh;
+                overflow-y: auto;
+            }
+        }
+
         .sidebar-item {
             transition: all 0.3s var(--ios-ease);
             border-radius: 14px;
@@ -224,7 +234,7 @@
                 <div class="w-24 h-24 mx-auto mb-4 bg-white/80 p-2 rounded-2xl flex items-center justify-center shadow-lg transform rotate-2 hover:rotate-0 transition-transform border border-blue-200">
                     <img src="https://iili.io/By8FQ7s.png" alt="Logo SDN 22 TK" class="w-full h-full object-contain drop-shadow" onerror="this.onerror=null; this.src='https://placehold.co/100x100/1e40af/ffffff?text=SDN22TK';">
                 </div>
-                <h1 class="text-2xl font-extrabold text-blue-950">SDN 22 TANAH KERAS</h1>
+                <h1 class="text-2xl font-extrabold text-blue-950">SDN 22 TANAH KERASK</h1>
                 <p class="text-xs text-blue-700 font-semibold tracking-wider uppercase mt-1">Sistem Informasi Arsip Digital</p>
             </div>
 
@@ -269,7 +279,7 @@
     <div id="appScreen" class="hidden min-h-screen flex flex-col md:flex-row">
 
         <!-- SIDEBAR NAVIGATION -->
-        <aside class="w-full md:w-64 sidebar-3d text-white flex-shrink-0 flex flex-col justify-between p-4 z-20">
+        <aside class="w-full md:w-64 sidebar-3d text-white flex-shrink-0 flex flex-col justify-between p-4 z-20 md:sticky md:top-0 md:h-screen md:overflow-y-auto">
             <div>
                 <!-- Brand Header -->
                 <div class="flex items-center gap-3 p-3 mb-6 bg-white/10 rounded-2xl border border-white/20 shadow-md">
@@ -297,6 +307,11 @@
                 <button onclick="switchTab('archive')" id="nav-archive" 
                     class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold">
                     <i class="fa-solid fa-folder-open w-5"></i> Daftar Arsip
+                </button>
+
+                <button onclick="switchTab('export')" id="nav-export" 
+                    class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold">
+                    <i class="fa-solid fa-file-export w-5"></i> Ekspor Data
                 </button>
 
                 <button onclick="switchTab('delete')" id="nav-delete" 
@@ -332,6 +347,27 @@
 
         <!-- MAIN CONTENT AREA -->
         <main class="flex-1 p-4 md:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+
+            <!-- BANNER PERINGATAN KAPASITAS DRIVE / SHEETS HAMPIR PENUH (NOTIFIKASI OTOMATIS) -->
+            <div id="driveStorageAlert" class="hidden mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-500 to-rose-600 text-white shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border border-amber-300 transform transition-all duration-300">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 animate-pulse">
+                        <i class="fa-solid fa-triangle-exclamation text-yellow-200"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-extrabold text-sm flex items-center gap-2">
+                            Penyimpanan Google Drive Akun Utama Hampir Penuh! 
+                            <span id="storagePercentBadge" class="bg-white text-rose-700 text-xs px-2 py-0.5 rounded-full font-black">0%</span>
+                        </h4>
+                        <p class="text-xs text-amber-100 mt-0.5">
+                            Kapasitas tersisa sangat menipis (<span id="storageUsedText">0 GB</span> dari <span id="storageTotalText">0 GB</span> terpakai). Segera ekspor berkas ke akun cadangan agar unggahan tidak terhenti.
+                        </p>
+                    </div>
+                </div>
+                <button onclick="switchTab('export')" class="px-4 py-2.5 bg-white text-rose-700 hover:bg-rose-50 font-extrabold text-xs rounded-xl shadow-md transition flex items-center gap-2 flex-shrink-0">
+                    <i class="fa-solid fa-cloud-arrow-right text-rose-600"></i> Disarankan: Ekspor Data
+                </button>
+            </div>
 
             <!-- TOP HEADER BAR -->
             <header class="neumorph-3d p-4 mb-8 flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -411,19 +447,24 @@
                         </p>
                     </div>
 
-                    <!-- Kategori Terbanyak -->
+                    <!-- Status Kuota Google Drive (Baru) -->
                     <div class="neumorph-3d p-5 card-3d-hover">
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kategori Utama</p>
-                                <h3 id="statTopCategory" class="text-lg font-bold text-blue-950 mt-2 truncate">-</h3>
+                                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Kuota Google Drive</p>
+                                <h3 id="statDrivePercent" class="text-2xl font-black text-blue-950 mt-1">0%</h3>
                             </div>
-                            <div class="w-12 h-12 rounded-2xl bg-teal-500 text-white flex items-center justify-center text-xl shadow-md">
-                                <i class="fa-solid fa-layer-group"></i>
+                            <div id="statDriveIconBg" class="w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-md">
+                                <i id="statDriveIcon" class="fa-solid fa-cloud-arrow-up"></i>
                             </div>
                         </div>
-                        <p class="text-[11px] text-teal-600 font-semibold mt-3 flex items-center gap-1">
-                            <i class="fa-solid fa-tags"></i> Kategori Aktif
+                        <!-- Mini Bar Progress Drive -->
+                        <div class="w-full bg-slate-200 rounded-full h-1.5 mt-3 overflow-hidden">
+                            <div id="statDriveBar" class="bg-emerald-500 h-full rounded-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p id="statDriveSubText" class="text-[11px] text-emerald-600 font-semibold mt-1.5 flex items-center justify-between">
+                            <span>Status: Aman</span>
+                            <a href="javascript:void(0)" onclick="switchTab('export')" class="hover:underline text-blue-600">Ekspor &rarr;</a>
                         </p>
                     </div>
 
@@ -452,7 +493,7 @@
                 <!-- FORM UPLOAD ARSIP 3D -->
                 <div class="neumorph-3d p-6 bg-white/60">
                     <h3 class="text-lg font-bold text-blue-950 mb-4 flex items-center gap-2 border-b border-slate-200 pb-3">
-                        <i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Unggah Dokumen Arsip
+                        <i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Form Unggah Dokumen Arsip
                     </h3>
 
                     <form id="archiveForm" onsubmit="handleArchiveSubmit(event)" class="space-y-5">
@@ -656,14 +697,112 @@
 
             </section>
 
-            <!-- VIEW 4: PENGHAPUSAN ARSIP (MENU BARU KHUSUS PEMBERSIHAN DRIVE & SHEETS) -->
+            <!-- VIEW 4: EKSPOR & MIGRASI DATA (MENU BARU) -->
+            <section id="exportView" class="hidden space-y-8">
+                <!-- Banner Info Ekspor -->
+                <div class="neumorph-3d p-6 bg-gradient-to-r from-blue-700 via-indigo-700 to-sky-700 text-white relative overflow-hidden">
+                    <div class="relative z-10 max-w-2xl">
+                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-medium tracking-wide">Penyimpanan & Cadangan 🔄</span>
+                        <h2 class="text-xl font-bold mt-2">Ekspor & Migrasi Data Ke Akun Lain</h2>
+                        <p class="text-xs text-blue-100 mt-1">Gunakan fitur ini untuk memindahkan/membagikan berkas Pada Database.</p>
+                    </div>
+                    <i class="fa-solid fa-cloud-arrow-right absolute -right-6 -bottom-6 text-9xl text-white/10 pointer-events-none"></i>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Form Pengaturan Email Tujuan & Kriteria Ekspor -->
+                    <div class="neumorph-3d p-6 bg-white/60 lg:col-span-1 space-y-5">
+                        <h3 class="text-base font-bold text-blue-950 flex items-center gap-2 border-b border-slate-200 pb-3">
+                            <i class="fa-solid fa-paper-plane text-blue-600"></i> Akun Tujuan Ekspor
+                        </h3>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Email Akun Penerima / Cadangan <span class="text-red-500">*</span></label>
+                            <input type="email" id="targetExportEmail" required value="fauzi8212@admin.sd.belajar.id"
+                                class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all text-xs font-semibold text-blue-900" 
+                                placeholder="Contoh: user@admin.sd.belajar.id">
+                            <p class="text-[10px] text-slate-500 mt-1">Akses berkas file di Google Drive akan dibagikan & ditransfer ke akun ini.</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Peran Akses</label>
+                            <select id="exportRoleSelect" class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl text-xs font-semibold">
+                                <option value="editor">Editor (Dapat Edit & Kelola)</option>
+                                <option value="viewer">Viewer (Hanya Melihat/Mengunduh)</option>
+                            </select>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-200 space-y-3">
+                            <h4 class="text-xs font-bold text-slate-700 uppercase">Unduh Cadangan Database Lokal:</h4>
+                            <div class="flex gap-2">
+                                <button onclick="exportDatabaseJSON()" class="w-1/2 py-2.5 bg-slate-800 text-white rounded-xl text-xs font-bold hover:bg-slate-900 transition flex items-center justify-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-file-code"></i> Unduh JSON
+                                </button>
+                                <button onclick="exportDatabaseCSV()" class="w-1/2 py-2.5 bg-emerald-700 text-white rounded-xl text-xs font-bold hover:bg-emerald-800 transition flex items-center justify-center gap-1.5 shadow">
+                                    <i class="fa-solid fa-file-excel"></i> Unduh CSV
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daftar Dokumen Untuk Diekspor -->
+                    <div class="neumorph-3d p-6 bg-white/60 lg:col-span-2">
+                        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 border-b border-slate-200 pb-4">
+                            <div>
+                                <h4 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                                    <i class="fa-solid fa-list-check text-blue-600"></i> Pilih Dokumen Untuk Diekspor
+                                </h4>
+                                <p class="text-xs text-slate-500 mt-0.5">Pilih dokumen di bawah ini untuk ditransfer hak aksesnya ke akun tujuan.</p>
+                            </div>
+
+                            <button onclick="executeExportData()" id="btnExecuteExport" 
+                                class="px-5 py-3 text-xs text-white font-bold rounded-xl btn-3d-primary flex items-center gap-2 shadow-lg">
+                                <i class="fa-solid fa-share-from-square"></i> EKSPOR DATA SEKARANG
+                            </button>
+                        </div>
+
+                        <!-- Search & Filter Inside Export -->
+                        <div class="flex items-center justify-between gap-3 mb-4">
+                            <div class="relative flex-1">
+                                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                                <input type="text" id="exportSearchInput" oninput="renderExportTable()" 
+                                    class="w-full pl-8 pr-3 py-1.5 bg-slate-100 border border-slate-300 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    placeholder="Cari dokumen diekspor...">
+                            </div>
+
+                            <button onclick="toggleSelectAllExport()" class="px-3 py-1.5 bg-slate-200 text-slate-700 text-xs font-bold rounded-lg hover:bg-slate-300 transition">
+                                Select All / Reset
+                            </button>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-inner max-h-96">
+                            <table class="w-full text-left border-collapse">
+                                <thead class="sticky top-0 z-10">
+                                    <tr class="bg-blue-900 text-white text-xs uppercase font-bold tracking-wider">
+                                        <th class="p-3 text-center">Pilih</th>
+                                        <th class="p-3">Nama Dokumen</th>
+                                        <th class="p-3">Tanggal</th>
+                                        <th class="p-3">Kategori</th>
+                                        <th class="p-3 text-center">Status Link</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="exportTableBody" class="text-xs bg-white divide-y divide-slate-100">
+                                    <!-- Dynamic Rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 5: PENGHAPUSAN ARSIP -->
             <section id="deleteView" class="hidden space-y-8">
                 <!-- Info Banner Pembersihan -->
                 <div class="neumorph-3d p-6 bg-gradient-to-r from-red-600 to-rose-700 text-white relative overflow-hidden">
                     <div class="relative z-10 max-w-2xl">
                         <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-medium tracking-wide">Pembersihan Ruang Penyimpanan ⚠️</span>
                         <h2 class="text-xl font-bold mt-2">Penghapusan & Retensi Dokumen Arsip</h2>
-                        <p class="text-xs text-rose-100 mt-1">Gunakan fitur ini untuk menghapus dokumen lama (misal 5 tahun ke atas)</p>
+                        <p class="text-xs text-rose-100 mt-1">Gunakan fitur ini untuk menghapus dokumen lama (misal 5 tahun ke atas) agar</p>
                     </div>
                     <i class="fa-solid fa-broom absolute -right-6 -bottom-6 text-9xl text-white/10 pointer-events-none"></i>
                 </div>
@@ -760,670 +899,408 @@
 
     <!-- JAVASCRIPT LOGIC & GOOGLE APPS SCRIPT INTEGRATION -->
     <script>
-        /* ========================================================================
-         * KODE GOOGLE APPS SCRIPT (BACKEND GOOGLE SHEETS & DRIVE):
-         * 
-         * Salin (copy) kode di bawah ini ke editor Ekstensi > Apps Script di Google Sheets Anda:
-         * ------------------------------------------------------------------------
-         * 
-         * function doPost(e) {
-         *   try {
-         *     var data = JSON.parse(e.postData.contents);
-         *     var ss = SpreadsheetApp.getActiveSpreadsheet();
-         *     
-         *     // 1. Buat / Ambil Sheet 'Arsip' secara otomatis
-         *     var sheet = ss.getSheetByName("Arsip");
-         *     if (!sheet) {
-         *       sheet = ss.insertSheet("Arsip");
-         *       // Buat Header Tabel otomatis
-         *       sheet.appendRow(["Timestamp", "Nama Dokumen", "Tanggal", "Kategori Dokumen", "Keterangan", "Ukuran File", "Nama File", "Link File Google Drive"]);
-         *       sheet.getRange(1, 1, 1, 8).setFontWeight("bold").setBackground("#1e40af").setFontColor("#ffffff");
-         *     }
-         *     
-         *     // 2. Buat / Ambil Folder 'ARSIP SDN 22 TK' di Google Drive secara otomatis
-         *     var folderName = "ARSIP SDN 22 TK";
-         *     var folders = DriveApp.getFoldersByName(folderName);
-         *     var folder;
-         *     if (folders.hasNext()) {
-         *       folder = folders.next();
-         *     } else {
-         *       folder = DriveApp.createFolder(folderName);
-         *     }
-         *     
-         *     // 3. Simpan File ke Google Drive (mengubah Base64 kembali ke File Blob)
-         *     var fileUrl = "-";
-         *     if (data.fileData && data.fileName) {
-         *       var bytes = Utilities.base64Decode(data.fileData);
-         *       var blob = Utilities.newBlob(bytes, data.mimeType || 'application/octet-stream', data.fileName);
-         *       var uploadedFile = folder.createFile(blob);
-         *       
-         *       // Set akses file agar bisa dibaca/didownload via link
-         *       uploadedFile.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
-         *       fileUrl = uploadedFile.getUrl();
-         *     }
-         *     
-         *     // 4. Catat baris data baru ke Sheet 'Arsip'
-         *     sheet.appendRow([
-         *       new Date(),
-         *       data.name,
-         *       data.date,
-         *       data.category,
-         *       data.desc,
-         *       data.size,
-         *       data.fileName,
-         *       fileUrl
-         *     ]);
-         *     
-         *     return ContentService.createTextOutput(JSON.stringify({ result: "success", fileUrl: fileUrl }))
-         *       .setMimeType(ContentService.MimeType.JSON);
-         *       
-         *   } catch (err) {
-         *     return ContentService.createTextOutput(JSON.stringify({ result: "error", error: err.toString() }))
-         *       .setMimeType(ContentService.MimeType.JSON);
-         *   }
-         * }
-         * 
-         * function doGet(e) {
-         *   return ContentService.createTextOutput("Service Web App Arsip SDN 22 TK Aktif");
-         * }
-         * 
-        /* ------------------------------------------------------------------------
-         * LANGKAH DEPLOYMENT:
-         * 1. Klik menu "Deploy" (Terapkan) > "Deployment baru" (New deployment).
-         * 2. Pilih Jenis Deployment: "Web App" (Aplikasi Web).
-         * 3. Set "Execute as" (Jalankan sebagai): "Me" (Saya).
-         * 4. Set "Who has access" (Siapa yang memiliki akses): "Anyone" (Siapa saja).
-         * 5. Klik "Deploy", beri izin akses Google Drive & Sheets.
-         * 6. Salin URL Web App dan tempelkan pada variabel SCRIPT_URL di bawah ini.
-         * ======================================================================== */
-        
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmifFf1y6RN-OD0Aa10sFvw9JTghUcNPcDJmL1S7awEVem26Hs3LwAyG_pA74q9Yuj/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHH-p5-ytkafJ-N_Aci7PU1squZzR4JME9kcBsBo0sazRpOxBvy6WBPk42TQ9PI_Q3/exec';
 
         // Constants
         const MAX_FILE_SIZE_BYTES = 300 * 1024 * 1024; // 300 Megabytes
+
+        // State Management
+        let archives = JSON.parse(localStorage.getItem('sdn22tk_archives')) || [];
         let selectedFile = null;
-
-        // Global State
-        let archives = [];
+        let selectedFileBase64 = null;
         let deferredPrompt = null;
-        let pendingDeleteTargets = []; // State untuk daftar dokumen target hapus masal
 
-        // PAGINATION STATE
+        // Pagination State
         let currentPage = 1;
         let rowsPerPage = 10;
+        let filteredArchivesList = [];
 
-        // PWA Install Prompt Listener (Chrome, Edge, Chromebook)
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            deferredPrompt = e;
-            const installBtn = document.getElementById('pwaInstallBtn');
-            if (installBtn) {
-                installBtn.classList.remove('hidden');
+        // Export State
+        let selectedExportIds = new Set();
+
+        // Delete Batch State
+        let targetDeleteArchives = [];
+
+        // Initialize on DOM Ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Set current date
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date();
+            document.getElementById('currentDate').innerText = today.toLocaleDateString('id-ID', options);
+
+            // Listen for PWA Install Prompt
+            window.addEventListener('beforeinstallprompt', (e) => {
+                e.preventDefault();
+                deferredPrompt = e;
+                const pwaBtn = document.getElementById('pwaInstallBtn');
+                if (pwaBtn) pwaBtn.classList.remove('hidden');
+            });
+
+            // Check Login Status
+            if (localStorage.getItem('sdn22tk_isLoggedIn') === 'true') {
+                showAppScreen();
+            } else {
+                showLoginScreen();
             }
         });
 
-        async function installPWA() {
-            if (!deferredPrompt) {
-                showToast('Aplikasi sudah terinstal atau peramban tidak mendukung PWA.', 'info');
-                return;
+        // PWA Install Action
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        showToast('Aplikasi berhasil dipasang di layar utama!', 'success');
+                    }
+                    deferredPrompt = null;
+                    document.getElementById('pwaInstallBtn').classList.add('hidden');
+                });
             }
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            if (outcome === 'accepted') {
-                showToast('Aplikasi SDN 22 TK berhasil diinstal!', 'success');
-                document.getElementById('pwaInstallBtn').classList.add('hidden');
-            }
-            deferredPrompt = null;
         }
 
-        window.addEventListener('appinstalled', () => {
-            deferredPrompt = null;
-            const installBtn = document.getElementById('pwaInstallBtn');
-            if (installBtn) installBtn.classList.add('hidden');
-            showToast('Aplikasi SDN 22 TK telah terpasang di perangkat Anda!', 'success');
-        });
-
-        // Application Initialization
-        window.addEventListener('DOMContentLoaded', () => {
-            // Set Today Date Display
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = new Date().toLocaleDateString('id-ID', options);
-
-            // Set default date picker to today
-            document.getElementById('docDate').valueAsDate = new Date();
-
-            // Load Data from LocalStorage
-            loadArchives();
-
-            // Check Session Login State
-            if (sessionStorage.getItem('isLoggedIn') === 'true') {
-                showAppScreen();
-            }
-        });
-
-        // --- AUTHENTICATION MODULE ---
-        async function handleLogin(e) {
-            e.preventDefault();
+        /* ------------------------------------------------------------------------
+         * AUTHENTICATION LOGIC (LOGIN & LOGOUT)
+         * ------------------------------------------------------------------------ */
+        function handleLogin(event) {
+            event.preventDefault();
             const usernameInput = document.getElementById('usernameInput').value.trim();
             const passwordInput = document.getElementById('passwordInput').value.trim();
 
             if (usernameInput === 'SDN22TK' && passwordInput === '12345') {
-                sessionStorage.setItem('isLoggedIn', 'true');
-                
-                // Tampilkan Loading Popup "Memuat Data Arsip" & Fetch dari Sheets
-                await fetchArchivesFromSheets();
-
-                showToast('Berhasil Login! Selamat Datang di Sistem SDN 22 TK.', 'success');
+                localStorage.setItem('sdn22tk_isLoggedIn', 'true');
+                showToast('Login Berhasil! Menyinkronkan data...', 'success');
                 showAppScreen();
+                fetchArchivesFromSheets(true);
             } else {
-                showToast('Username atau Kata Sandi Salah! Silakan coba lagi.', 'danger');
-            }
-        }
-
-        // --- FETCH DATA ARSIP DARI GOOGLE SHEETS VIA APPS SCRIPT ---
-        async function fetchArchivesFromSheets(manualSync = false) {
-            const overlay = document.getElementById('loadingOverlay');
-            const circle = document.getElementById('circleProgress');
-            const line = document.getElementById('lineProgressBar');
-            const percentText = document.getElementById('loadingPercentText');
-            const subText = document.getElementById('loadingSubText');
-
-            overlay.classList.remove('hidden');
-
-            // Animation Helper
-            const updateProgress = (val, text) => {
-                percentText.textContent = `${val}%`;
-                circle.setAttribute('stroke-dasharray', `${val}, 100`);
-                line.style.width = `${val}%`;
-                if (text) subText.textContent = text;
-            };
-
-            updateProgress(15, 'Menghubungkan ke Google Sheets...');
-
-            try {
-                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-                    updateProgress(45, 'Sedang Mengambil Data');
-                    
-                    const response = await fetch(SCRIPT_URL + '?action=getData');
-                    const responseText = await response.text();
-
-                    updateProgress(75, 'Memproses data dokumen...');
-
-                    let data;
-                    try {
-                        data = JSON.parse(responseText);
-                    } catch (parseError) {
-                        console.error("Respon dari Google Apps Script bukan format JSON valid:", responseText);
-                        throw new Error("Penerbitan (Deploy) Google Apps Script perlu diperbarui atau belum diset ke 'Anyone'.");
-                    }
-
-                    if (Array.isArray(data)) {
-                        archives = data;
-                        saveArchivesToStorage();
-                    } else if (data && data.error) {
-                        console.error("Error dari Apps Script:", data.error);
-                    }
-                } else {
-                    updateProgress(60, 'Memuat data lokal...');
-                    await new Promise(r => setTimeout(r, 400));
-                }
-            } catch (err) {
-                console.error("Gagal sinkronisasi Sheets:", err);
-                updateProgress(80, 'Gagal terhubung, memuat data lokal...');
-                await new Promise(r => setTimeout(r, 300));
-            }
-
-            updateProgress(100, 'Sinkronisasi Selesai!');
-            await new Promise(r => setTimeout(r, 400));
-
-            overlay.classList.add('hidden');
-
-            if (manualSync) {
-                renderDashboard();
-                renderArchiveTable();
-                showToast('Data Arsip berhasil disinkronkan!', 'success');
+                showToast('Username atau Password salah!', 'error');
             }
         }
 
         function handleLogout() {
-            sessionStorage.removeItem('isLoggedIn');
+            localStorage.removeItem('sdn22tk_isLoggedIn');
             
-            // Dikosongkan secara otomatis saat keluar (logout) demi keamanan
+            // Clear inputs for security
             document.getElementById('usernameInput').value = '';
             document.getElementById('passwordInput').value = '';
-            
-            document.getElementById('appScreen').classList.add('hidden');
+
+            showToast('Berhasil keluar dari sistem', 'info');
+            showLoginScreen();
+        }
+
+        function showLoginScreen() {
             document.getElementById('loginScreen').classList.remove('hidden');
-            showToast('Anda telah berhasil keluar dari sistem.', 'info');
+            document.getElementById('appScreen').classList.add('hidden');
         }
 
         function showAppScreen() {
             document.getElementById('loginScreen').classList.add('hidden');
             document.getElementById('appScreen').classList.remove('hidden');
             renderDashboard();
-            renderArchiveTable();
+            filterArchives();
         }
 
-        // --- NAVIGATION SYSTEM ---
+        /* ------------------------------------------------------------------------
+         * NAVIGATION & TAB SWITCHING
+         * ------------------------------------------------------------------------ */
         function switchTab(tabName) {
-            const dashboardView = document.getElementById('dashboardView');
-            const uploadView = document.getElementById('uploadView');
-            const archiveView = document.getElementById('archiveView');
-            const deleteView = document.getElementById('deleteView');
-            
-            const navDashboard = document.getElementById('nav-dashboard');
-            const navUpload = document.getElementById('nav-upload');
-            const navArchive = document.getElementById('nav-archive');
-            const navDelete = document.getElementById('nav-delete');
-            
-            const pageTitle = document.getElementById('pageTitle');
-
-            // Reset all active classes & views
-            [dashboardView, uploadView, archiveView, deleteView].forEach(view => {
-                if(view) {
-                    view.classList.add('hidden');
-                    view.classList.remove('view-transition');
-                }
-            });
-            [navDashboard, navUpload, navArchive, navDelete].forEach(nav => {
-                if(nav) nav.classList.remove('active');
-            });
-
-            let activeView = null;
-
-            if (tabName === 'dashboard') {
-                activeView = dashboardView;
-                navDashboard.classList.add('active');
-                pageTitle.innerHTML = `<i class="fa-solid fa-chart-line text-blue-600"></i> Beranda Utama`;
-                renderDashboard();
-            } else if (tabName === 'upload') {
-                activeView = uploadView;
-                navUpload.classList.add('active');
-                pageTitle.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Unggah Arsip`;
-            } else if (tabName === 'archive') {
-                activeView = archiveView;
-                navArchive.classList.add('active');
-                pageTitle.innerHTML = `<i class="fa-solid fa-folder-open text-blue-600"></i> Daftar Arsip`;
-                renderArchiveTable();
-            } else if (tabName === 'delete') {
-                activeView = deleteView;
-                navDelete.classList.add('active');
-                pageTitle.innerHTML = `<i class="fa-solid fa-trash-can-arrow-up text-red-600"></i> Penghapusan Arsip (Retensi 5+ Tahun)`;
-            }
-
-            if (activeView) {
-                activeView.classList.remove('hidden');
-                // Trigger iOS smooth view transition
-                void activeView.offsetWidth; // Reflow trigger
-                activeView.classList.add('view-transition');
-            }
-        }
-        // --- MANAJEMEN PENGHAPUSAN DOKUMEN (TUNGGAL & KRITERIA 5 TAHUN) ---
-        async function deleteArchive(id) {
-            const item = archives.find(a => a.id === id);
-            if (!item) return;
-
-            if (!confirm(`Apakah Anda yakin ingin menghapus arsip "${item.name}"?\n\nDokumen akan dihapus dari Google Sheets dan berkas di Google Drive akan terhapus.`)) {
-                return;
-            }
-
-            showToast(`Sedang menghapus arsip "${item.name}" dari Sheets & Drive...`, 'info');
-
-            // Hapus dari LocalStorage
-            archives = archives.filter(a => a.id !== id);
-            saveArchivesToStorage();
-            renderArchiveTable();
-            renderDashboard();
-
-            // Panggil backend Apps Script untuk menghapus dari Sheets & Drive
-            try {
-                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-                    const payload = {
-                        action: 'deleteSingle',
-                        name: item.name,
-                        fileName: item.fileName,
-                        fileUrl: item.fileUrl
-                    };
-
-                    await fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-                }
-                showToast(`Berhasil menghapus "${item.name}" dari Drive & Sheets!`, 'success');
-            } catch (err) {
-                console.error("Gagal sinkron hapus ke Sheets/Drive:", err);
-                showToast(`Dokumen dihapus dari aplikasi lokal.`, 'info');
-            }
-        }
-
-        // --- FILTER KRITERIA PENGHAPUSAN MASAL ---
-        function handleCriteriaDeleteSearch(e) {
-            e.preventDefault();
-            const filterName = document.getElementById('deleteDocName').value.trim().toLowerCase();
-            const filterCat = document.getElementById('deleteDocCategory').value.trim().toLowerCase();
-            const filterYearStr = document.getElementById('deleteDocYear').value;
-            const filterYear = filterYearStr ? parseInt(filterYearStr, 10) : null;
-
-            pendingDeleteTargets = archives.filter(item => {
-                // Check Nama Dokumen
-                const matchName = !filterName || item.name.toLowerCase().includes(filterName);
-                
-                // Check Kategori
-                const matchCat = !filterCat || item.category.toLowerCase().includes(filterCat);
-
-                // Check Tahun (<= Batas Tahun)
-                let matchYear = true;
-                if (filterYear && item.date) {
-                    const itemYear = new Date(item.date).getFullYear();
-                    matchYear = itemYear <= filterYear;
-                }
-
-                return matchName && matchCat && matchYear;
-            });
-
-            renderDeleteSearchResults();
-        }
-
-        function renderDeleteSearchResults() {
-            const container = document.getElementById('deleteSearchResultsContainer');
-            const tbody = document.getElementById('deleteSearchResultsBody');
-            const badge = document.getElementById('targetDeleteCountBadge');
-            const btnExecute = document.getElementById('btnExecuteBatchDelete');
-
-            container.classList.remove('hidden');
-            tbody.innerHTML = '';
-            badge.textContent = `${pendingDeleteTargets.length} Dokumen`;
-
-            if (pendingDeleteTargets.length === 0) {
-                btnExecute.disabled = true;
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6" class="p-6 text-center text-slate-400 font-medium">
-                            Tidak ada dokumen arsip yang cocok dengan kriteria pencarian di atas.
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            btnExecute.disabled = false;
-
-            pendingDeleteTargets.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-rose-50/40 transition-colors";
-                tr.innerHTML = `
-                    <td class="p-3 font-bold text-slate-500">${index + 1}</td>
-                    <td class="p-3 font-bold text-slate-800">${escapeHtml(item.name)}</td>
-                    <td class="p-3 font-medium text-slate-600">${formatDateID(item.date)}</td>
-                    <td class="p-3"><span class="px-2 py-0.5 text-[11px] font-bold rounded ${getCategoryBadgeColor(item.category)}">${escapeHtml(item.category)}</span></td>
-                    <td class="p-3 text-slate-500">${item.size}</td>
-                    <td class="p-3 text-center">
-                        ${item.fileUrl && item.fileUrl !== '#' 
-                            ? `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-link"></i> Terhubung Drive</span>`
-                            : `<span class="text-slate-400">Hanya Lokal</span>`}
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function resetDeleteCriteriaForm() {
-            document.getElementById('deleteDocName').value = '';
-            document.getElementById('deleteDocCategory').value = '';
-            document.getElementById('deleteDocYear').value = '';
-            pendingDeleteTargets = [];
-            document.getElementById('deleteSearchResultsContainer').classList.add('hidden');
-        }
-
-        async function confirmExecuteBatchDelete() {
-            if (pendingDeleteTargets.length === 0) return;
-
-            const count = pendingDeleteTargets.length;
-            const confirmMsg = `APAKAH ANDA YAKIN INGIN MENGHAPUS ${count} DOKUMEN SESEOSUSAI KRITERIA INI?\n\n` +
-                               `- Seluruh ${count} dokumen ini akan dihapus dari aplikasi.\n` +
-                               `- Baris data pada Google Sheets akan dihapus.\n` +
-                               `- Berkas file di Google Drive akan dihapus (Folder utama tetap aman).\n\n` +
-                               `Tindakan ini tidak dapat dibatalkan!`;
-
-            if (!confirm(confirmMsg)) return;
-
-            const overlay = document.getElementById('loadingOverlay');
-            const percentText = document.getElementById('loadingPercentText');
-            const subText = document.getElementById('loadingSubText');
-            const circle = document.getElementById('circleProgress');
-            const line = document.getElementById('lineProgressBar');
-
-            overlay.classList.remove('hidden');
-
-            const updateProgress = (val, text) => {
-                percentText.textContent = `${val}%`;
-                circle.setAttribute('stroke-dasharray', `${val}, 100`);
-                line.style.width = `${val}%`;
-                if (text) subText.textContent = text;
+            // Views
+            const views = {
+                dashboard: document.getElementById('dashboardView'),
+                upload: document.getElementById('uploadView'),
+                archive: document.getElementById('archiveView'),
+                export: document.getElementById('exportView'),
+                delete: document.getElementById('deleteView')
             };
 
-            updateProgress(20, `Memproses penghapusan ${count} dokumen...`);
+            // Nav buttons
+            const navs = {
+                dashboard: document.getElementById('nav-dashboard'),
+                upload: document.getElementById('nav-upload'),
+                archive: document.getElementById('nav-archive'),
+                export: document.getElementById('nav-export'),
+                delete: document.getElementById('nav-delete')
+            };
 
-            // Extract target IDs & URLs
-            const targetIds = pendingDeleteTargets.map(t => t.id);
-            const deletePayloadList = pendingDeleteTargets.map(t => ({
-                name: t.name,
-                fileName: t.fileName,
-                fileUrl: t.fileUrl
-            }));
+            // Page Titles
+            const titles = {
+                dashboard: '<i class="fa-solid fa-chart-line text-blue-600"></i> Beranda Utama',
+                upload: '<i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Unggah Arsip',
+                archive: '<i class="fa-solid fa-folder-open text-blue-600"></i> Daftar Data Arsip Terdaftar',
+                export: '<i class="fa-solid fa-file-export text-blue-600"></i> Ekspor Data',
+                delete: '<i class="fa-solid fa-trash-can-arrow-up text-red-600"></i> Penghapusan & Retensi Arsip'
+            };
 
-            // 1. Hapus dari LocalStorage
-            archives = archives.filter(a => !targetIds.includes(a.id));
-            saveArchivesToStorage();
-            renderDashboard();
-
-            updateProgress(60, `Menghapus baris Sheets & file Google Drive...`);
-
-            // 2. Kirim permintaan hapus batch ke Apps Script
-            try {
-                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-                    await fetch(SCRIPT_URL, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            action: 'deleteBatch',
-                            items: deletePayloadList
-                        })
-                    });
+            // Switch Visibility with Animation
+            Object.keys(views).forEach(key => {
+                if (views[key]) {
+                    if (key === tabName) {
+                        views[key].classList.remove('hidden');
+                        views[key].classList.add('view-transition');
+                        if (navs[key]) navs[key].classList.add('active');
+                    } else {
+                        views[key].classList.add('hidden');
+                        views[key].classList.remove('view-transition');
+                        if (navs[key]) navs[key].classList.remove('active');
+                    }
                 }
-            } catch (err) {
-                console.error("Error batch delete Google Apps Script:", err);
-            }
+            });
 
-            updateProgress(100, `Pembersihan Berhasil!`);
-            await new Promise(r => setTimeout(r, 500));
+            document.getElementById('pageTitle').innerHTML = titles[tabName] || 'Arsip Digital';
 
-            overlay.classList.add('hidden');
-
-            showToast(`Berhasil menghapus ${count} dokumen dari sistem, Sheets, dan Drive!`, 'success');
-            resetDeleteCriteriaForm();
+            if (tabName === 'dashboard') renderDashboard();
+            if (tabName === 'archive') filterArchives();
+            if (tabName === 'export') renderExportTable();
         }
 
-        // --- HANDLER UPLOAD FILE & VALIDASI SIZE 300MB ---
-        function handleFileSelect(e) {
-            const file = e.target.files[0];
+        /* ------------------------------------------------------------------------
+         * SINKRONISASI DATA KE/DARI GOOGLE SHEETS & DRIVE
+         * ------------------------------------------------------------------------ */
+        async function fetchArchivesFromSheets(showLoadingModal = false) {
+            if (showLoadingModal) showLoadingProgress(10, 'Menghubungkan ke Google Sheets...');
+
+            try {
+                if (showLoadingModal) showLoadingProgress(40, 'Mengambil data berkas...');
+                
+                const response = await fetch(SCRIPT_URL, { method: 'GET' });
+                
+                if (showLoadingModal) showLoadingProgress(70, 'Memproses data arsip...');
+                
+                const data = await response.json();
+
+                if (data && data.archives && Array.isArray(data.archives)) {
+                    archives = data.archives;
+                    localStorage.setItem('sdn22tk_archives', JSON.stringify(archives));
+                }
+
+                if (data && data.storage) {
+                    updateDriveStorageAlert(data.storage);
+                }
+
+                if (showLoadingModal) showLoadingProgress(100, 'Selesai!');
+                
+                renderDashboard();
+                filterArchives();
+                renderExportTable();
+                showToast('Data arsip berhasil disinkronkan!', 'success');
+
+            } catch (err) {
+                console.warn("Sync Sheets Warning:", err);
+                if (showLoadingModal) hideLoadingProgress();
+                showToast('Menggunakan data lokal (Sync Sheets offline)', 'info');
+            } finally {
+                if (showLoadingModal) setTimeout(hideLoadingProgress, 400);
+            }
+        }
+
+        function updateDriveStorageAlert(storage) {
+            if (!storage) return;
+
+            const percent = storage.percent || 0;
+            const usedGb = (storage.usedBytes / (1024 * 1024 * 1024)).toFixed(2);
+            const totalGb = (storage.totalBytes / (1024 * 1024 * 1024)).toFixed(2);
+
+            document.getElementById('statDrivePercent').innerText = percent + '%';
+            document.getElementById('statDriveBar').style.width = Math.min(percent, 100) + '%';
+            document.getElementById('storagePercentBadge').innerText = percent + '%';
+            document.getElementById('storageUsedText').innerText = usedGb + ' GB';
+            document.getElementById('storageTotalText').innerText = totalGb + ' GB';
+
+            const alertBanner = document.getElementById('driveStorageAlert');
+
+            if (percent >= 70) {
+                alertBanner.classList.remove('hidden');
+                document.getElementById('statDriveIconBg').className = 'w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shadow-md';
+                document.getElementById('statDriveSubText').innerHTML = `<span class="text-amber-700 font-bold">Kapasitas Menipis</span> <a href="javascript:void(0)" onclick="switchTab('export')" class="hover:underline text-blue-600">Ekspor &rarr;</a>`;
+            } else {
+                alertBanner.classList.add('hidden');
+                document.getElementById('statDriveIconBg').className = 'w-12 h-12 rounded-2xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-md';
+                document.getElementById('statDriveSubText').innerHTML = `<span>Status: Aman</span> <a href="javascript:void(0)" onclick="switchTab('export')" class="hover:underline text-blue-600">Ekspor &rarr;</a>`;
+            }
+        }
+
+        /* ------------------------------------------------------------------------
+         * FORM HANDLER: UPLOAD ARSIP BARU (MAX 300MB)
+         * ------------------------------------------------------------------------ */
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
             if (!file) return;
 
             if (file.size > MAX_FILE_SIZE_BYTES) {
-                showToast(`Ukuran file terlalu besar (${formatBytes(file.size)}). Maksimal ukuran file adalah 300 MB.`, 'danger');
-                resetFileField();
+                showToast('Ukuran file melebihi batas 300 MB!', 'error');
+                event.target.value = '';
                 return;
             }
 
             selectedFile = file;
+
+            // UI Display
             document.getElementById('uploadPlaceholder').classList.add('hidden');
             document.getElementById('fileInfoBox').classList.remove('hidden');
-            document.getElementById('fileNameDisplay').textContent = file.name;
-            document.getElementById('fileSizeDisplay').textContent = formatBytes(file.size);
+            document.getElementById('fileNameDisplay').innerText = file.name;
+            document.getElementById('fileSizeDisplay').innerText = formatBytes(file.size);
+
+            // Read Base64 for Apps Script Upload
+            const reader = new FileReader();
+            document.getElementById('progressWrapper').classList.remove('hidden');
+            
+            reader.onprogress = (e) => {
+                if (e.lengthComputable) {
+                    const percent = Math.round((e.loaded / e.total) * 100);
+                    document.getElementById('progressBar').style.width = percent + '%';
+                    document.getElementById('progressText').innerText = percent + '% membaca berkas...';
+                }
+            };
+
+            reader.onload = function(e) {
+                selectedFileBase64 = e.target.result.split(',')[1];
+                document.getElementById('progressText').innerText = 'Berkas siap diunggah!';
+            };
+
+            reader.readAsDataURL(file);
         }
 
         function cancelFileSelection(e) {
-            if(e) e.stopPropagation();
+            if (e) e.stopPropagation();
             resetFileField();
         }
 
         function resetFileField() {
             selectedFile = null;
+            selectedFileBase64 = null;
             document.getElementById('docFile').value = '';
             document.getElementById('uploadPlaceholder').classList.remove('hidden');
             document.getElementById('fileInfoBox').classList.add('hidden');
-            document.getElementById('progressWrapper').classList.add('hidden');
             document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('progressWrapper').classList.add('hidden');
         }
 
-        // --- SUBMIT FORM ARSIP (SIMPAN KE GOOGLE SHEETS & DRIVE) ---
-        async function handleArchiveSubmit(e) {
-            e.preventDefault();
+        async function handleArchiveSubmit(event) {
+            event.preventDefault();
 
-            const name = document.getElementById('docName').value.trim();
-            const date = document.getElementById('docDate').value;
-            const category = document.getElementById('docCategory').value.trim();
-            const desc = document.getElementById('docDesc').value.trim();
-
-            if (!name || !date || !category || !selectedFile) {
-                showToast('Mohon lengkapi semua bidang yang wajib diisi!', 'danger');
+            if (!selectedFile || !selectedFileBase64) {
+                showToast('Pilih file dokumen terlebih dahulu!', 'error');
                 return;
             }
 
-            // Tampilkan progress bar
-            const progressWrapper = document.getElementById('progressWrapper');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            progressWrapper.classList.remove('hidden');
+            const docName = document.getElementById('docName').value.trim();
+            const docDate = document.getElementById('docDate').value;
+            const docCategory = document.getElementById('docCategory').value.trim();
+            const docDesc = document.getElementById('docDesc').value.trim();
 
-            const fileSizeFormatted = formatBytes(selectedFile.size);
+            showLoadingProgress(20, 'Mengompres data file...');
 
-            // Membaca file sebagai Base64
-            const reader = new FileReader();
-
-            reader.onprogress = function (event) {
-                if (event.lengthComputable) {
-                    const percent = Math.round((event.loaded / event.total) * 100);
-                    progressBar.style.width = percent + '%';
-                    progressText.textContent = `Membaca berkas... ${percent}%`;
-                }
+            const payload = {
+                name: docName,
+                date: docDate,
+                category: docCategory,
+                desc: docDesc,
+                size: formatBytes(selectedFile.size),
+                fileName: selectedFile.name,
+                mimeType: selectedFile.type,
+                fileData: selectedFileBase64
             };
 
-            reader.onload = async function () {
-                const base64Data = reader.result.split(',')[1]; // Ambil string base64 saja
-                const fileMimeType = selectedFile.type;
-                const fileName = selectedFile.name;
+            try {
+                showLoadingProgress(50, 'Mengunggah ke Google Drive & Sheets...');
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify(payload)
+                });
 
-                progressText.textContent = 'Sedang Mengunggah';
+                showLoadingProgress(80, 'Menyimpan data arsip...');
+                const resData = await response.json();
 
-                // Data object lokal sementara
                 const newArchive = {
-                    id: 'arch_' + Date.now(),
-                    name: name,
-                    date: date,
-                    category: category,
-                    desc: desc,
-                    size: fileSizeFormatted,
-                    fileName: fileName,
-                    fileUrl: '#', // placeholder URL sementara
-                    createdAt: new Date().toISOString()
+                    id: 'arc_' + Date.now(),
+                    name: docName,
+                    date: docDate,
+                    category: docCategory,
+                    desc: docDesc,
+                    size: formatBytes(selectedFile.size),
+                    fileName: selectedFile.name,
+                    fileUrl: (resData && resData.fileUrl) ? resData.fileUrl : '#'
                 };
 
-                // Kirim ke Google Apps Script via POST jika URL tersedia
-                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-                    try {
-                        const payload = {
-                            name: name,
-                            date: date,
-                            category: category,
-                            desc: desc,
-                            size: fileSizeFormatted,
-                            fileName: fileName,
-                            fileData: base64Data,
-                            mimeType: fileMimeType
-                        };
-
-                        const response = await fetch(SCRIPT_URL, {
-                            method: 'POST',
-                            mode: 'cors',
-                            headers: {
-                                'Content-Type': 'text/plain;charset=utf-8'
-                            },
-                            body: JSON.stringify(payload)
-                        });
-
-                        const result = await response.json();
-                        if (result.result === 'success' && result.fileUrl) {
-                            newArchive.fileUrl = result.fileUrl;
-                        }
-                    } catch (err) {
-                        console.error('Error pengiriman ke Google Apps Script:', err);
-                        showToast('Berkas tersimpan di sistem lokal. (Backend Apps Script tidak merespons)', 'info');
-                    }
-                }
-
-                // Simpan ke LocalStorage
                 archives.unshift(newArchive);
-                saveArchivesToStorage();
+                localStorage.setItem('sdn22tk_archives', JSON.stringify(archives));
 
-                // Reset Form Upload
+                showLoadingProgress(100, 'Selesai!');
+                showToast('Arsip Berhasil Disimpan & Terunggah!', 'success');
+
+                // Reset & Switch View
                 document.getElementById('archiveForm').reset();
-                document.getElementById('docDate').valueAsDate = new Date();
                 resetFileField();
+                
+                setTimeout(() => {
+                    hideLoadingProgress();
+                    switchTab('archive');
+                }, 400);
 
-                showToast('Arsip Berhasil Disimpan!', 'success');
+            } catch (err) {
+                console.error("Upload Error:", err);
+                hideLoadingProgress();
+                showToast('Gagal terhubung ke Apps Script, menyimpan ke lokal.', 'warning');
 
-                // Pindah otomatis ke menu Daftar Arsip
+                const localArchive = {
+                    id: 'arc_' + Date.now(),
+                    name: docName,
+                    date: docDate,
+                    category: docCategory,
+                    desc: docDesc,
+                    size: formatBytes(selectedFile.size),
+                    fileName: selectedFile.name,
+                    fileUrl: '#'
+                };
+                archives.unshift(localArchive);
+                localStorage.setItem('sdn22tk_archives', JSON.stringify(archives));
+
+                document.getElementById('archiveForm').reset();
+                resetFileField();
                 switchTab('archive');
-            };
-
-            reader.onerror = function () {
-                showToast('Gagal membaca berkas file!', 'danger');
-            };
-
-            reader.readAsDataURL(selectedFile);
-        }
-
-        // --- DATA ARCHIVE OPERATIONS ---
-        function loadArchives() {
-            const stored = localStorage.getItem('sdn22tk_archives');
-            if (stored) {
-                try {
-                    archives = JSON.parse(stored);
-                } catch (e) {
-                    archives = [];
-                }
-            } else {
-                archives = [];
-                saveArchivesToStorage();
             }
         }
 
-        function saveArchivesToStorage() {
-            localStorage.setItem('sdn22tk_archives', JSON.stringify(archives));
-        }
+        /* ------------------------------------------------------------------------
+         * TABLE & PAGINATION LOGIC (DAFTAR ARSIP)
+         * ------------------------------------------------------------------------ */
+        function filterArchives() {
+            const searchVal = document.getElementById('searchInput').value.toLowerCase();
+            const catVal = document.getElementById('filterCategory').value.toLowerCase();
 
-        // --- RENDER & PAGINASI TABLE DAFTAR ARSIP ---
-        function renderArchiveTable() {
-            const tbody = document.getElementById('archiveTableBody');
-            const emptyState = document.getElementById('emptyState');
-            const searchVal = document.getElementById('searchInput')?.value.toLowerCase() || '';
-            const categoryVal = document.getElementById('filterCategory')?.value.toLowerCase() || '';
-
-            tbody.innerHTML = '';
-
-            // 1. Filtering Data
-            let filtered = archives.filter(item => {
-                const matchSearch = item.name.toLowerCase().includes(searchVal) || item.fileName.toLowerCase().includes(searchVal);
-                const matchCategory = !categoryVal || item.category.toLowerCase().includes(categoryVal);
+            filteredArchivesList = archives.filter(item => {
+                const matchSearch = item.name.toLowerCase().includes(searchVal) || 
+                                    item.desc.toLowerCase().includes(searchVal) ||
+                                    item.fileName.toLowerCase().includes(searchVal);
+                const matchCategory = !catVal || item.category.toLowerCase().includes(catVal);
                 return matchSearch && matchCategory;
             });
 
-            const totalItems = filtered.length;
+            currentPage = 1;
+            renderArchiveTable();
+        }
+
+        function changeRowsPerPage(val) {
+            rowsPerPage = parseInt(val);
+            currentPage = 1;
+            renderArchiveTable();
+        }
+
+        function changePage(newPage) {
+            const totalPages = Math.ceil(filteredArchivesList.length / rowsPerPage) || 1;
+            if (newPage >= 1 && newPage <= totalPages) {
+                currentPage = newPage;
+                renderArchiveTable();
+            }
+        }
+
+        function renderArchiveTable() {
+            const tbody = document.getElementById('archiveTableBody');
+            const emptyState = document.getElementById('emptyState');
+            tbody.innerHTML = '';
+
+            const totalItems = filteredArchivesList.length;
 
             if (totalItems === 0) {
                 emptyState.classList.remove('hidden');
@@ -1434,53 +1311,53 @@
                 document.getElementById('paginationContainer').classList.remove('hidden');
             }
 
-            // 2. Pagination Calculations
-            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            const totalPages = Math.ceil(totalItems / rowsPerPage);
             if (currentPage > totalPages) currentPage = totalPages;
-            if (currentPage < 1) currentPage = 1;
 
             const startIndex = (currentPage - 1) * rowsPerPage;
             const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
-            const paginatedItems = filtered.slice(startIndex, endIndex);
+            const pageData = filteredArchivesList.slice(startIndex, endIndex);
 
-            // Update Pagination Text Info
-            document.getElementById('pageInfoStart').textContent = totalItems > 0 ? startIndex + 1 : 0;
-            document.getElementById('pageInfoEnd').textContent = endIndex;
-            document.getElementById('pageInfoTotal').textContent = totalItems;
-
-            // 3. Render Table Rows for Current Page
-            paginatedItems.forEach((item, index) => {
-                const actualIndex = startIndex + index + 1;
+            pageData.forEach((item, index) => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-blue-50/50 transition-colors";
+                tr.className = 'hover:bg-blue-50/50 transition border-b border-slate-100';
+
+                // Direct download link helper
+                let downloadUrl = item.fileUrl;
+                if (item.fileUrl && item.fileUrl.includes('drive.google.com')) {
+                    const fileIdMatch = item.fileUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || item.fileUrl.match(/id=([a-zA-Z0-9_-]+)/);
+                    if (fileIdMatch && fileIdMatch[1]) {
+                        downloadUrl = `https://drive.google.com/uc?export=download&id=${fileIdMatch[1]}`;
+                    }
+                }
+
                 tr.innerHTML = `
-                    <td class="p-3.5 font-bold text-slate-500">${actualIndex}</td>
-                    <td class="p-3.5">
-                        <div class="font-bold text-slate-800">${escapeHtml(item.name)}</div>
-                        <div class="text-xs text-slate-400 flex items-center gap-1">
-                            <i class="fa-solid fa-paperclip"></i> ${escapeHtml(item.fileName)}
-                        </div>
+                    <td class="p-3.5 text-xs font-bold text-slate-500">${startIndex + index + 1}</td>
+                    <td class="p-3.5 font-bold text-blue-950">
+                        ${escapeHtml(item.name)}
+                        <p class="text-[11px] font-normal text-slate-500 truncate max-w-xs">${escapeHtml(item.desc || '-')}</p>
                     </td>
-                    <td class="p-3.5 text-xs font-semibold text-slate-600">${formatDateID(item.date)}</td>
-                    <td class="p-3.5">
-                        <span class="px-2.5 py-1 text-xs font-bold rounded-lg ${getCategoryBadgeColor(item.category)}">
-                            ${escapeHtml(item.category)}
-                        </span>
+                    <td class="p-3.5 text-xs text-slate-600 font-semibold">${item.date}</td>
+                    <td class="p-3.5 text-xs">
+                        <span class="bg-blue-100 text-blue-800 font-bold px-2.5 py-1 rounded-lg">${escapeHtml(item.category)}</span>
                     </td>
                     <td class="p-3.5 text-xs font-medium text-slate-600">${item.size}</td>
                     <td class="p-3.5 text-center">
-                        <div class="flex items-center justify-center gap-2">
-                            <button onclick="viewFile('${item.fileUrl}', '${escapeHtml(item.fileName)}')" 
-                                class="p-2 text-blue-600 hover:bg-blue-100 rounded-lg transition" title="Lihat Berkas Drive">
-                                <i class="fa-solid fa-eye"></i>
-                            </button>
-                            <button onclick="downloadFileDirect('${item.fileUrl}', '${escapeHtml(item.fileName)}')" 
-                                class="p-2 text-emerald-600 hover:bg-emerald-100 rounded-lg transition" title="Download Langsung File">
-                                <i class="fa-solid fa-download"></i>
-                            </button>
-                            <button onclick="deleteArchive('${item.id}')" 
-                                class="p-2 text-red-500 hover:bg-red-100 rounded-lg transition" title="Hapus Arsip">
-                                <i class="fa-solid fa-trash"></i>
+                        <div class="flex items-center justify-center gap-1.5">
+                            ${item.fileUrl && item.fileUrl !== '#' ? `
+                                <a href="${item.fileUrl}" target="_blank" title="Lihat Berkas" 
+                                    class="p-2 bg-blue-100 text-blue-700 hover:bg-blue-600 hover:text-white rounded-lg transition text-xs font-semibold">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                                <a href="${downloadUrl}" target="_blank" download title="Download Berkas" 
+                                    class="p-2 bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white rounded-lg transition text-xs font-semibold">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
+                            ` : `<span class="text-xs text-slate-400 font-italic">No File</span>`}
+                            
+                            <button onclick="deleteSingleArchive('${item.id}', '${escapeHtml(item.name)}', '${item.fileUrl}')" title="Hapus Arsip" 
+                                class="p-2 bg-rose-100 text-rose-700 hover:bg-rose-600 hover:text-white rounded-lg transition text-xs font-semibold">
+                                <i class="fa-solid fa-trash-can"></i>
                             </button>
                         </div>
                     </td>
@@ -1488,207 +1365,359 @@
                 tbody.appendChild(tr);
             });
 
-            // 4. Render Dynamic Page Numbers
-            renderPaginationButtons(totalPages);
-        }
+            // Update Pagination Controls Info
+            document.getElementById('pageInfoStart').innerText = startIndex + 1;
+            document.getElementById('pageInfoEnd').innerText = endIndex;
+            document.getElementById('pageInfoTotal').innerText = totalItems;
 
-        function renderPaginationButtons(totalPages) {
-            const pageNumbersContainer = document.getElementById('pageNumbers');
-            const btnPrev = document.getElementById('btnPrevPage');
-            const btnNext = document.getElementById('btnNextPage');
+            document.getElementById('btnPrevPage').disabled = (currentPage === 1);
+            document.getElementById('btnNextPage').disabled = (currentPage === totalPages);
 
-            pageNumbersContainer.innerHTML = '';
-            btnPrev.disabled = currentPage === 1;
-            btnNext.disabled = currentPage === totalPages;
+            // Render Page Number Buttons
+            const pageNumbersDiv = document.getElementById('pageNumbers');
+            pageNumbersDiv.innerHTML = '';
 
-            // Generate page number list with smart range truncation
-            let pagesToDisplay = [];
-            const maxVisibleButtons = 5;
-
-            if (totalPages <= maxVisibleButtons) {
-                for (let i = 1; i <= totalPages; i++) pagesToDisplay.push(i);
-            } else {
-                pagesToDisplay.push(1);
-                let start = Math.max(2, currentPage - 1);
-                let end = Math.min(totalPages - 1, currentPage + 1);
-
-                if (currentPage <= 3) {
-                    start = 2;
-                    end = 4;
-                } else if (currentPage >= totalPages - 2) {
-                    start = totalPages - 3;
-                    end = totalPages - 1;
-                }
-
-                if (start > 2) pagesToDisplay.push('...');
-                for (let i = start; i <= end; i++) pagesToDisplay.push(i);
-                if (end < totalPages - 1) pagesToDisplay.push('...');
-                pagesToDisplay.push(totalPages);
-            }
-
-            pagesToDisplay.forEach(p => {
-                if (p === '...') {
-                    const span = document.createElement('span');
-                    span.className = 'px-2 py-1 text-xs text-slate-400 font-bold';
-                    span.textContent = '...';
-                    pageNumbersContainer.appendChild(span);
-                } else {
+            for (let i = 1; i <= totalPages; i++) {
+                if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
                     const btn = document.createElement('button');
-                    btn.onclick = () => changePage(p);
-                    btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold transition ${
-                        p === currentPage
-                            ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
-                            : 'bg-slate-100 hover:bg-blue-100 text-slate-700'
-                    }`;
-                    btn.textContent = p;
-                    pageNumbersContainer.appendChild(btn);
+                    btn.className = `px-3 py-1 rounded-lg text-xs font-bold transition ${i === currentPage ? 'bg-blue-600 text-white shadow-md' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`;
+                    btn.innerText = i;
+                    btn.onclick = () => changePage(i);
+                    pageNumbersDiv.appendChild(btn);
                 }
-            });
-        }
-
-        function changePage(newPage) {
-            currentPage = newPage;
-            renderArchiveTable();
-        }
-
-        function changeRowsPerPage(newRows) {
-            rowsPerPage = parseInt(newRows, 10) || 10;
-            currentPage = 1; // Reset ke halaman 1 setiap ganti jumlah baris
-            renderArchiveTable();
-        }
-
-        function filterArchives() {
-            currentPage = 1; // Reset ke halaman 1 saat melakukan pencarian
-            renderArchiveTable();
-        }
-
-        // --- UTILITY FUNGSI SEE & DOWNLOAD FILE ---
-        function viewFile(fileUrl, fileName) {
-            if (fileUrl && fileUrl !== '#') {
-                window.open(fileUrl, '_blank');
-            } else {
-                showToast(`Data simulasi lokal: Berkas ${fileName} belum terhubung ke Google Drive.`, 'info');
             }
         }
 
-        function downloadFileDirect(fileUrl, fileName) {
-            if (!fileUrl || fileUrl === '#') {
-                showToast(`Tidak dapat mengunduh: File ${fileName} belum memiliki link Drive.`, 'danger');
+        async function deleteSingleArchive(id, docName, fileUrl) {
+            if (!confirm(`Apakah Anda yakin ingin menghapus arsip "${docName}"?\nBerkas di Google Drive & Sheets juga akan terhapus.`)) {
                 return;
             }
 
+            showLoadingProgress(30, 'Menghapus data...');
+
+            archives = archives.filter(item => item.id !== id);
+            localStorage.setItem('sdn22tk_archives', JSON.stringify(archives));
+
             try {
-                let directDownloadUrl = fileUrl;
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'deleteSingle', name: docName, fileUrl: fileUrl })
+                });
+            } catch (e) {
+                console.warn("Delete remote warning:", e);
+            }
 
-                // Ekstrak File ID dari URL Google Drive jika berupa URL View/Preview
-                const driveMatch = fileUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || fileUrl.match(/id=([a-zA-Z0-9_-]+)/);
-                
-                if (driveMatch && driveMatch[1]) {
-                    const fileId = driveMatch[1];
-                    // Format Direct Download Google Drive
-                    directDownloadUrl = `https://drive.google.com/uc?export=download&id=${fileId}`;
-                }
+            hideLoadingProgress();
+            showToast('Arsip berhasil dihapus!', 'success');
+            renderDashboard();
+            filterArchives();
+        }
 
-                // Buat elemen anchor sementara untuk memicu download otomatis
-                const a = document.createElement('a');
-                a.href = directDownloadUrl;
-                a.target = '_blank';
-                a.download = fileName || 'Arsip-SDN22TK';
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
+        /* ------------------------------------------------------------------------
+         * EKSPOR & MIGRASI DATA LOGIC
+         * ------------------------------------------------------------------------ */
+        function renderExportTable() {
+            const tbody = document.getElementById('exportTableBody');
+            const searchVal = (document.getElementById('exportSearchInput')?.value || '').toLowerCase();
+            tbody.innerHTML = '';
 
-                showToast(`Proses unduh berkas ${fileName} dimulai...`, 'success');
+            const list = archives.filter(item => item.name.toLowerCase().includes(searchVal));
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-400 text-xs">Tidak ada data dokumen ditemukan</td></tr>`;
+                return;
+            }
+
+            list.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-blue-50/50 border-b border-slate-100';
+
+                const isChecked = selectedExportIds.has(item.id);
+
+                tr.innerHTML = `
+                    <td class="p-3 text-center">
+                        <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleExportItem('${item.id}')" class="rounded text-blue-600 focus:ring-blue-500 w-4 h-4 cursor-pointer">
+                    </td>
+                    <td class="p-3 font-bold text-slate-800">${escapeHtml(item.name)}</td>
+                    <td class="p-3 text-slate-600">${item.date}</td>
+                    <td class="p-3"><span class="bg-slate-100 text-slate-700 font-semibold px-2 py-0.5 rounded">${escapeHtml(item.category)}</span></td>
+                    <td class="p-3 text-center">${item.fileUrl && item.fileUrl !== '#' ? '<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Drive Link</span>' : '<span class="text-slate-400">Lokal</span>'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleExportItem(id) {
+            if (selectedExportIds.has(id)) {
+                selectedExportIds.delete(id);
+            } else {
+                selectedExportIds.add(id);
+            }
+        }
+
+        function toggleSelectAllExport() {
+            if (selectedExportIds.size === archives.length) {
+                selectedExportIds.clear();
+            } else {
+                archives.forEach(item => selectedExportIds.add(item.id));
+            }
+            renderExportTable();
+        }
+
+        async function executeExportData() {
+            const targetEmail = document.getElementById('targetExportEmail').value.trim();
+            const role = document.getElementById('exportRoleSelect').value;
+
+            if (!targetEmail) {
+                showToast('Masukkan email akun tujuan ekspor!', 'error');
+                return;
+            }
+
+            if (selectedExportIds.size === 0) {
+                showToast('Pilih setidaknya satu dokumen untuk diekspor!', 'warning');
+                return;
+            }
+
+            const itemsToExport = archives.filter(item => selectedExportIds.has(item.id));
+
+            showLoadingProgress(20, `Mengekspor ${itemsToExport.length} dokumen ke ${targetEmail}...`);
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({
+                        action: 'exportData',
+                        targetEmail: targetEmail,
+                        role: role,
+                        items: itemsToExport
+                    })
+                });
+
+                showLoadingProgress(100, 'Ekspor Selesai!');
+                showToast(`Berhasil mentransfer akses ${itemsToExport.length} berkas ke ${targetEmail}!`, 'success');
 
             } catch (err) {
-                console.error("Gagal mengunduh file:", err);
-                // Fallback buka URL jika browser memblokir download otomatis
-                window.open(fileUrl, '_blank');
+                console.error("Export Error:", err);
+                showToast('Gagal terhubung ke Apps Script untuk mentransfer hak akses.', 'error');
+            } finally {
+                setTimeout(hideLoadingProgress, 400);
             }
         }
 
-        function renderDashboard() {
-            document.getElementById('statTotalCount').textContent = archives.length;
+        function exportDatabaseJSON() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(archives, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `Backup_Arsip_SDN22TK_${new Date().toISOString().split('T')[0]}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+            showToast('Database JSON berhasil diunduh!', 'success');
+        }
 
-            // Calculate total size estimation
-            let totalMB = 0;
-            archives.forEach(a => {
-                const parts = a.size.split(' ');
-                if (parts.length === 2) {
-                    const num = parseFloat(parts[0]);
-                    const unit = parts[1].toUpperCase();
-                    if (unit === 'KB') totalMB += num / 1024;
-                    else if (unit === 'MB') totalMB += num;
-                    else if (unit === 'GB') totalMB += num * 1024;
+        function exportDatabaseCSV() {
+            if (archives.length === 0) {
+                showToast('Tidak ada data arsip untuk diekspor!', 'warning');
+                return;
+            }
+            
+            let csvContent = "data:text/csv;charset=utf-8,ID,Nama Dokumen,Tanggal,Kategori,Keterangan,Ukuran,Nama File,URL Google Drive\n";
+            archives.forEach(item => {
+                csvContent += `"${item.id}","${item.name}","${item.date}","${item.category}","${item.desc || ''}","${item.size}","${item.fileName}","${item.fileUrl}"\n`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Database_Arsip_SDN22TK_${new Date().toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            showToast('Database CSV berhasil diunduh!', 'success');
+        }
+
+        /* ------------------------------------------------------------------------
+         * PENGHAPUSAN ARSIP KRITERIA & RETENSI LOGIC
+         * ------------------------------------------------------------------------ */
+        function handleCriteriaDeleteSearch(event) {
+            event.preventDefault();
+            const nameKey = document.getElementById('deleteDocName').value.trim().toLowerCase();
+            const catKey = document.getElementById('deleteDocCategory').value.trim().toLowerCase();
+            const yearMax = document.getElementById('deleteDocYear').value;
+
+            targetDeleteArchives = archives.filter(item => {
+                const matchName = !nameKey || item.name.toLowerCase().includes(nameKey);
+                const matchCat = !catKey || item.category.toLowerCase().includes(catKey);
+                let matchYear = true;
+                if (yearMax && item.date) {
+                    const itemYear = parseInt(item.date.split('-')[0]);
+                    matchYear = itemYear <= parseInt(yearMax);
+                }
+                return matchName && matchCat && matchYear;
+            });
+
+            const resultsContainer = document.getElementById('deleteSearchResultsContainer');
+            const tbody = document.getElementById('deleteSearchResultsBody');
+            const btnExecute = document.getElementById('btnExecuteBatchDelete');
+
+            resultsContainer.classList.remove('hidden');
+            tbody.innerHTML = '';
+            document.getElementById('targetDeleteCountBadge').innerText = `${targetDeleteArchives.length} Dokumen`;
+
+            if (targetDeleteArchives.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400 text-xs">Tidak ada dokumen yang sesuai kriteria penghapusan</td></tr>`;
+                btnExecute.disabled = true;
+                return;
+            }
+
+            btnExecute.disabled = false;
+
+            targetDeleteArchives.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-rose-50 border-b border-slate-100';
+                tr.innerHTML = `
+                    <td class="p-3 text-slate-500 font-bold">${index + 1}</td>
+                    <td class="p-3 font-bold text-slate-800">${escapeHtml(item.name)}</td>
+                    <td class="p-3 text-slate-600">${item.date}</td>
+                    <td class="p-3"><span class="bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded">${escapeHtml(item.category)}</span></td>
+                    <td class="p-3 text-slate-600">${item.size}</td>
+                    <td class="p-3 text-center">${item.fileUrl && item.fileUrl !== '#' ? '<span class="text-rose-600 font-bold"><i class="fa-solid fa-trash-can"></i> Drive File</span>' : '<span class="text-slate-400">Lokal</span>'}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function resetDeleteCriteriaForm() {
+            document.getElementById('deleteCriteriaForm').reset();
+            document.getElementById('deleteSearchResultsContainer').classList.add('hidden');
+            targetDeleteArchives = [];
+        }
+
+        async function confirmExecuteBatchDelete() {
+            if (targetDeleteArchives.length === 0) return;
+
+            if (!confirm(`⚠️ PERINGATAN PENTING!\nAnda akan menghapus PERMANEN ${targetDeleteArchives.length} dokumen arsip dari Local Storage, Google Sheets, dan Google Drive.\n\nApakah Anda yakin ingin melanjutkan?`)) {
+                return;
+            }
+
+            showLoadingProgress(20, `Menghapus ${targetDeleteArchives.length} berkas dari Google Drive & Sheets...`);
+
+            const idsToDelete = new Set(targetDeleteArchives.map(i => i.id));
+            archives = archives.filter(item => !idsToDelete.has(item.id));
+            localStorage.setItem('sdn22tk_archives', JSON.stringify(archives));
+
+            try {
+                await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'deleteBatch', items: targetDeleteArchives })
+                });
+
+                showLoadingProgress(100, 'Penghapusan Selesai!');
+                showToast(`Berhasil menghapus ${targetDeleteArchives.length} dokumen!`, 'success');
+
+            } catch (err) {
+                console.error("Batch delete error:", err);
+                showToast('Terjadi kesalahan koneksi saat menghapus remote data.', 'warning');
+            } finally {
+                setTimeout(() => {
+                    hideLoadingProgress();
+                    resetDeleteCriteriaForm();
+                    renderDashboard();
+                    filterArchives();
+                }, 400);
+            }
+        }
+
+        /* ------------------------------------------------------------------------
+         * DASHBOARD STATS RENDERER
+         * ------------------------------------------------------------------------ */
+        function renderDashboard() {
+            document.getElementById('statTotalCount').innerText = archives.length;
+
+            let totalBytes = 0;
+            archives.forEach(item => {
+                if (item.size) {
+                    const parts = item.size.split(' ');
+                    const val = parseFloat(parts[0]);
+                    const unit = parts[1];
+                    if (unit === 'KB') totalBytes += val * 1024;
+                    else if (unit === 'MB') totalBytes += val * 1024 * 1024;
+                    else if (unit === 'GB') totalBytes += val * 1024 * 1024 * 1024;
+                    else totalBytes += val;
                 }
             });
-            document.getElementById('statTotalSize').textContent = totalMB.toFixed(1) + ' MB';
 
-            // Top Category calculation
-            if (archives.length > 0) {
-                const counts = {};
-                archives.forEach(a => counts[a.category] = (counts[a.category] || 0) + 1);
-                const topCat = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-                document.getElementById('statTopCategory').textContent = topCat;
-                document.getElementById('statLastUpdate').textContent = formatDateID(archives[0].date);
-            } else {
-                document.getElementById('statTopCategory').textContent = '-';
-                document.getElementById('statLastUpdate').textContent = 'Belum ada';
-            }
+            document.getElementById('statTotalSize').innerText = formatBytes(totalBytes);
+            document.getElementById('statLastUpdate').innerText = archives.length > 0 ? (archives[0].date || 'Terbaru') : 'Belum ada';
         }
 
-        // --- UTILITY HELPER FUNCTIONS ---
+        /* ------------------------------------------------------------------------
+         * HELPER FUNCTIONS (LOADING MODAL, TOAST, UTILS)
+         * ------------------------------------------------------------------------ */
+        function showLoadingProgress(percent, message) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('hidden');
+
+            document.getElementById('loadingPercentText').innerText = percent + '%';
+            document.getElementById('circleProgress').setAttribute('stroke-dasharray', `${percent}, 100`);
+            document.getElementById('lineProgressBar').style.width = percent + '%';
+            if (message) document.getElementById('loadingSubText').innerText = message;
+        }
+
+        function hideLoadingProgress() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+        }
+
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+
+            const bgColors = {
+                success: 'bg-emerald-600 text-white',
+                error: 'bg-rose-600 text-white',
+                warning: 'bg-amber-500 text-white',
+                info: 'bg-blue-600 text-white'
+            };
+
+            const icons = {
+                success: 'fa-circle-check',
+                error: 'fa-circle-xmark',
+                warning: 'fa-triangle-exclamation',
+                info: 'fa-circle-info'
+            };
+
+            toast.className = `px-4 py-3 rounded-2xl shadow-xl font-medium text-xs flex items-center gap-3 border border-white/20 toast-animate ${bgColors[type] || bgColors.info}`;
+            toast.innerHTML = `<i class="fa-solid ${icons[type] || icons.info} text-base"></i> <span>${escapeHtml(message)}</span>`;
+
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateY(-10px)';
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+
         function formatBytes(bytes, decimals = 2) {
-            if (bytes === 0) return '0 Bytes';
+            if (!bytes || bytes === 0) return '0 Bytes';
             const k = 1024;
             const dm = decimals < 0 ? 0 : decimals;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
             return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
         }
 
-        function formatDateID(dateString) {
-            if (!dateString) return '-';
-            const d = new Date(dateString);
-            if (isNaN(d.getTime())) return dateString;
-            return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-        }
-
-        function getCategoryBadgeColor(cat) {
-            const catLower = (cat || '').toLowerCase();
-            if (catLower.includes('masuk')) return 'bg-emerald-100 text-emerald-800';
-            if (catLower.includes('keluar')) return 'bg-blue-100 text-blue-800';
-            if (catLower.includes('siswa')) return 'bg-purple-100 text-purple-800';
-            if (catLower.includes('uang')) return 'bg-amber-100 text-amber-800';
-            if (catLower.includes('pegawai')) return 'bg-indigo-100 text-indigo-800';
-            return 'bg-slate-200 text-slate-700';
-        }
-
-        function escapeHtml(str) {
-            return (str || '').replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-        }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toastContainer');
-            const toast = document.createElement('div');
-            
-            let bgClass = 'bg-blue-600 text-white';
-            let icon = 'fa-circle-info';
-            if (type === 'success') {
-                bgClass = 'bg-emerald-600 text-white';
-                icon = 'fa-circle-check';
-            } else if (type === 'danger') {
-                bgClass = 'bg-red-600 text-white';
-                icon = 'fa-triangle-exclamation';
-            }
-
-            toast.className = `toast-animate px-4 py-3 rounded-xl shadow-xl font-semibold text-xs flex items-center gap-3 ${bgClass} border border-white/20`;
-            toast.innerHTML = `<i class="fa-solid ${icon} text-base"></i> <span>${message}</span>`;
-            
-            container.appendChild(toast);
-            setTimeout(() => {
-                toast.remove();
-            }, 3500);
+        function escapeHtml(text) {
+            if (!text) return '';
+            return String(text)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
     </script>
 </body>
