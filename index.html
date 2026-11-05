@@ -298,6 +298,11 @@
                     class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold">
                     <i class="fa-solid fa-folder-open w-5"></i> Daftar Arsip
                 </button>
+
+                <button onclick="switchTab('delete')" id="nav-delete" 
+                    class="sidebar-item w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold">
+                    <i class="fa-solid fa-trash-can-arrow-up w-5"></i> Penghapusan Arsip
+                </button>
             </nav>
         </div>
 
@@ -305,7 +310,7 @@
         <div class="pt-4 border-t border-white/10 mt-6 space-y-3">
             <button onclick="fetchArchivesFromSheets(true)" title="Sinkronkan Ulang Data"
                 class="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold flex items-center justify-center gap-2 transition">
-                <i class="fa-solid fa-rotate"></i> Sync Data
+                <i class="fa-solid fa-rotate"></i> Syncron Data
             </button>
             <div class="flex items-center justify-between p-2">
                 <div class="flex items-center gap-2">
@@ -313,7 +318,7 @@
                             ADM
                         </div>
                         <div class="text-xs">
-                            <p class="font-bold text-white">Admin Sekolah</p>
+                            <p class="font-bold text-white">Fauzi, S.Hum</p>
                             <p class="text-[10px] text-blue-200">SDN 22 TK</p>
                         </div>
                     </div>
@@ -447,7 +452,7 @@
                 <!-- FORM UPLOAD ARSIP 3D -->
                 <div class="neumorph-3d p-6 bg-white/60">
                     <h3 class="text-lg font-bold text-blue-950 mb-4 flex items-center gap-2 border-b border-slate-200 pb-3">
-                        <i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Form Unggah Dokumen Arsip
+                        <i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Unggah Dokumen Arsip
                     </h3>
 
                     <form id="archiveForm" onsubmit="handleArchiveSubmit(event)" class="space-y-5">
@@ -548,7 +553,7 @@
 
                 <!-- TABLE DAFTAR ARSIP -->
                 <div class="neumorph-3d p-6">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-6">
                         <div>
                             <h3 class="text-lg font-bold text-blue-950 flex items-center gap-2">
                                 <i class="fa-solid fa-list-check text-blue-600"></i> Daftar Data Arsip Terdaftar
@@ -556,25 +561,41 @@
                             <p class="text-xs text-slate-500">Cari, filter, dan unduh dokumen arsip yang telah tersimpan.</p>
                         </div>
 
-                        <!-- Search & Filter Bar -->
-                        <div class="flex flex-col sm:flex-row items-center gap-3">
+                        <!-- Search, Filter & Per-Page Controls -->
+                        <div class="flex flex-wrap items-center gap-3">
+                            <!-- Selector Tampilkan Jumlah Data (1 sampai 1000) -->
+                            <div class="flex items-center gap-2 bg-slate-100 border border-slate-300 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-600 shadow-inner">
+                                <span>Tampilkan:</span>
+                                <select id="rowsPerPageSelect" onchange="changeRowsPerPage(this.value)" 
+                                    class="bg-transparent text-blue-950 font-bold focus:outline-none cursor-pointer">
+                                    <option value="5">5</option>
+                                    <option value="10" selected>10</option>
+                                    <option value="20">20</option>
+                                    <option value="50">50</option>
+                                    <option value="100">100</option>
+                                    <option value="500">500</option>
+                                    <option value="1000">1000</option>
+                                </select>
+                                <span>baris</span>
+                            </div>
+
                             <!-- Search -->
-                            <div class="relative w-full sm:w-64">
+                            <div class="relative w-full sm:w-56">
                                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400 text-xs"></i>
                                 <input type="text" id="searchInput" oninput="filterArchives()" 
-                                    class="w-full pl-9 pr-4 py-2 bg-slate-100 border border-slate-300 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                                    placeholder="Cari nama dokumen atau kategori...">
+                                    class="w-full pl-9 pr-4 py-2 bg-slate-100 border border-slate-300 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-inner"
+                                    placeholder="Cari nama dokumen...">
                             </div>
 
                             <!-- Filter Category (Dinamis / Teks Bebas) -->
-                            <div class="relative w-full sm:w-48">
+                            <div class="relative w-full sm:w-40">
                                 <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-400 text-xs"></i>
                                 <input type="text" id="filterCategory" oninput="filterArchives()" 
-                                    class="w-full pl-8 pr-3 py-2 bg-slate-100 border border-slate-300 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                                    class="w-full pl-8 pr-3 py-2 bg-slate-100 border border-slate-300 text-xs rounded-xl focus:ring-2 focus:ring-blue-500 focus:outline-none shadow-inner"
                                     placeholder="Filter kategori...">
                             </div>
 
-                            <button onclick="switchTab('upload')" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-1">
+                            <button onclick="switchTab('upload')" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white font-semibold text-xs rounded-xl hover:bg-blue-700 transition flex items-center justify-center gap-1 shadow-md">
                                 <i class="fa-solid fa-plus"></i> Tambah Arsip
                             </button>
                         </div>
@@ -607,8 +628,132 @@
                         <p class="text-slate-600 font-semibold text-sm">Tidak ada dokumen arsip ditemukan</p>
                         <p class="text-xs text-slate-400 mt-1">Silakan unggah dokumen baru melalui menu Kelola Arsip.</p>
                     </div>
+
+                    <!-- PAGINASI HALAMAN (PAGINATION FOOTER) -->
+                    <div id="paginationContainer" class="mt-6 pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="text-xs text-slate-500 font-medium">
+                            Menampilkan <span id="pageInfoStart" class="font-bold text-slate-800">0</span> - <span id="pageInfoEnd" class="font-bold text-slate-800">0</span> dari <span id="pageInfoTotal" class="font-bold text-slate-800">0</span> data arsip
+                        </div>
+
+                        <!-- Button Controls Page Numbering -->
+                        <div class="flex items-center gap-1.5 flex-wrap justify-center">
+                            <button id="btnPrevPage" onclick="changePage(currentPage - 1)" 
+                                class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 disabled:opacity-40 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 transition flex items-center gap-1">
+                                <i class="fa-solid fa-chevron-left text-[10px]"></i> Prev
+                            </button>
+
+                            <!-- Dynamic Numbers (1, 2, 3, 4, 5, dst) -->
+                            <div id="pageNumbers" class="flex items-center gap-1"></div>
+
+                            <button id="btnNextPage" onclick="changePage(currentPage + 1)" 
+                                class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 hover:bg-blue-600 hover:text-white text-slate-600 disabled:opacity-40 disabled:hover:bg-slate-100 disabled:hover:text-slate-600 transition flex items-center gap-1">
+                                Next <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
+                        </div>
+                    </div>
+
                 </div>
 
+            </section>
+
+            <!-- VIEW 4: PENGHAPUSAN ARSIP (MENU BARU KHUSUS PEMBERSIHAN DRIVE & SHEETS) -->
+            <section id="deleteView" class="hidden space-y-8">
+                <!-- Info Banner Pembersihan -->
+                <div class="neumorph-3d p-6 bg-gradient-to-r from-red-600 to-rose-700 text-white relative overflow-hidden">
+                    <div class="relative z-10 max-w-2xl">
+                        <span class="bg-white/20 text-xs px-3 py-1 rounded-full font-medium tracking-wide">Pembersihan Ruang Penyimpanan ⚠️</span>
+                        <h2 class="text-xl font-bold mt-2">Penghapusan & Retensi Dokumen Arsip</h2>
+                        <p class="text-xs text-rose-100 mt-1">Gunakan fitur ini untuk menghapus dokumen lama (misal 5 tahun ke atas)</p>
+                    </div>
+                    <i class="fa-solid fa-broom absolute -right-6 -bottom-6 text-9xl text-white/10 pointer-events-none"></i>
+                </div>
+
+                <!-- Form Filter Kriteria Penghapusan -->
+                <div class="neumorph-3d p-6 bg-white/60">
+                    <h3 class="text-lg font-bold text-blue-950 mb-4 flex items-center gap-2 border-b border-slate-200 pb-3">
+                        <i class="fa-solid fa-filter-circle-xmark text-red-600"></i> Filter Kriteria Penghapusan Arsip
+                    </h3>
+
+                    <form id="deleteCriteriaForm" onsubmit="handleCriteriaDeleteSearch(event)" class="space-y-5">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                            <!-- Filter Nama Dokumen -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Nama Dokumen / Kata Kunci</label>
+                                <input type="text" id="deleteDocName" 
+                                    class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-xs" 
+                                    placeholder="Contoh: Laporan Keuangan (Kosongkan jika semua)">
+                            </div>
+
+                            <!-- Filter Kategori Dokumen -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Kategori Dokumen</label>
+                                <input type="text" id="deleteDocCategory" 
+                                    class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-xs" 
+                                    placeholder="Contoh: Surat Masuk (Kosongkan jika semua)">
+                            </div>
+
+                            <!-- Filter Maksimal Tahun Dokumen (Retensi 5 Tahun) -->
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Batas Maksimal Tahun Dokumen</label>
+                                <select id="deleteDocYear" 
+                                    class="w-full p-3 bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:outline-none transition-all text-xs font-semibold">
+                                    <option value="">-- Semua Tahun --</option>
+                                    <option value="2021">2021 dan Sebelumnya (Dokumen 5+ Tahun)</option>
+                                    <option value="2022">2022 dan Sebelumnya (Dokumen 4+ Tahun)</option>
+                                    <option value="2023">2023 dan Sebelumnya (Dokumen 3+ Tahun)</option>
+                                    <option value="2024">2024 dan Sebelumnya (Dokumen 2+ Tahun)</option>
+                                    <option value="2025">2025 dan Sebelumnya</option>
+                                    <option value="2026">2026 dan Sebelumnya</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-end gap-3 pt-2">
+                            <button type="button" onclick="resetDeleteCriteriaForm()" class="px-4 py-2.5 text-xs font-bold text-slate-600 bg-slate-200 rounded-xl hover:bg-slate-300 transition">
+                                Reset Filter
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 text-xs text-white font-bold rounded-xl btn-3d-primary flex items-center gap-2">
+                                <i class="fa-solid fa-magnifying-glass font-normal"></i> Cari Dokumen Terdampak
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Hasil Pencarian Kriteria Dokumen Yang Akan Dihapus -->
+                <div id="deleteSearchResultsContainer" class="neumorph-3d p-6 hidden">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4 border-b border-slate-200 pb-4">
+                        <div>
+                            <h4 class="text-base font-bold text-slate-800 flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-red-600"></i> Hasil Dokumen Sesuai Kriteria 
+                                <span id="targetDeleteCountBadge" class="bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full font-extrabold">0 Dokumen</span>
+                            </h4>
+                            <p class="text-xs text-slate-500 mt-0.5">Dokumen di bawah ini akan dihapus permanen dari LocalStorage, Google Sheets, dan Google Drive.</p>
+                        </div>
+
+                        <button onclick="confirmExecuteBatchDelete()" id="btnExecuteBatchDelete" disabled
+                            class="px-5 py-3 text-xs text-white font-bold rounded-xl btn-3d-danger flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <i class="fa-solid fa-trash-can"></i> HAPUS SEMUA DOKUMEN DISINI
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-200 shadow-inner">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-rose-900 text-white text-xs uppercase font-bold tracking-wider">
+                                    <th class="p-3">No</th>
+                                    <th class="p-3">Nama Dokumen</th>
+                                    <th class="p-3">Tanggal</th>
+                                    <th class="p-3">Kategori</th>
+                                    <th class="p-3">Ukuran</th>
+                                    <th class="p-3 text-center">Status Link Drive</th>
+                                </tr>
+                            </thead>
+                            <tbody id="deleteSearchResultsBody" class="text-xs bg-white divide-y divide-slate-100">
+                                <!-- Data target hapus -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </section>
         </main>
     </div>
@@ -692,7 +837,7 @@
          * 6. Salin URL Web App dan tempelkan pada variabel SCRIPT_URL di bawah ini.
          * ======================================================================== */
         
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyHzw-zZHKW1JEKj54u7x3TVFP_avT9JOsodrPAgWIpIw5AO93GQKQ8FdnzZ1rx_o7w/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwmifFf1y6RN-OD0Aa10sFvw9JTghUcNPcDJmL1S7awEVem26Hs3LwAyG_pA74q9Yuj/exec';
 
         // Constants
         const MAX_FILE_SIZE_BYTES = 300 * 1024 * 1024; // 300 Megabytes
@@ -701,6 +846,11 @@
         // Global State
         let archives = [];
         let deferredPrompt = null;
+        let pendingDeleteTargets = []; // State untuk daftar dokumen target hapus masal
+
+        // PAGINATION STATE
+        let currentPage = 1;
+        let rowsPerPage = 10;
 
         // PWA Install Prompt Listener (Chrome, Edge, Chromebook)
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -792,7 +942,7 @@
 
             try {
                 if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-                    updateProgress(45, 'Sedang Mengambil data');
+                    updateProgress(45, 'Sedang Mengambil Data');
                     
                     const response = await fetch(SCRIPT_URL + '?action=getData');
                     const responseText = await response.text();
@@ -859,19 +1009,25 @@
             const dashboardView = document.getElementById('dashboardView');
             const uploadView = document.getElementById('uploadView');
             const archiveView = document.getElementById('archiveView');
+            const deleteView = document.getElementById('deleteView');
             
             const navDashboard = document.getElementById('nav-dashboard');
             const navUpload = document.getElementById('nav-upload');
             const navArchive = document.getElementById('nav-archive');
+            const navDelete = document.getElementById('nav-delete');
             
             const pageTitle = document.getElementById('pageTitle');
 
             // Reset all active classes & views
-            [dashboardView, uploadView, archiveView].forEach(view => {
-                view.classList.add('hidden');
-                view.classList.remove('view-transition');
+            [dashboardView, uploadView, archiveView, deleteView].forEach(view => {
+                if(view) {
+                    view.classList.add('hidden');
+                    view.classList.remove('view-transition');
+                }
             });
-            [navDashboard, navUpload, navArchive].forEach(nav => nav.classList.remove('active'));
+            [navDashboard, navUpload, navArchive, navDelete].forEach(nav => {
+                if(nav) nav.classList.remove('active');
+            });
 
             let activeView = null;
 
@@ -883,12 +1039,16 @@
             } else if (tabName === 'upload') {
                 activeView = uploadView;
                 navUpload.classList.add('active');
-                pageTitle.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Form Unggah Arsip`;
+                pageTitle.innerHTML = `<i class="fa-solid fa-cloud-arrow-up text-blue-600"></i> Unggah Arsip`;
             } else if (tabName === 'archive') {
                 activeView = archiveView;
                 navArchive.classList.add('active');
-                pageTitle.innerHTML = `<i class="fa-solid fa-folder-open text-blue-600"></i> Navigasi & Daftar Arsip`;
+                pageTitle.innerHTML = `<i class="fa-solid fa-folder-open text-blue-600"></i> Daftar Arsip`;
                 renderArchiveTable();
+            } else if (tabName === 'delete') {
+                activeView = deleteView;
+                navDelete.classList.add('active');
+                pageTitle.innerHTML = `<i class="fa-solid fa-trash-can-arrow-up text-red-600"></i> Penghapusan Arsip (Retensi 5+ Tahun)`;
             }
 
             if (activeView) {
@@ -898,16 +1058,204 @@
                 activeView.classList.add('view-transition');
             }
         }
+        // --- MANAJEMEN PENGHAPUSAN DOKUMEN (TUNGGAL & KRITERIA 5 TAHUN) ---
+        async function deleteArchive(id) {
+            const item = archives.find(a => a.id === id);
+            if (!item) return;
 
-        // --- FILE SELECTION & VALIDATION (MAX 300 MB) ---
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
+            if (!confirm(`Apakah Anda yakin ingin menghapus arsip "${item.name}"?\n\nDokumen akan dihapus dari Google Sheets dan berkas di Google Drive akan terhapus.`)) {
+                return;
+            }
+
+            showToast(`Sedang menghapus arsip "${item.name}" dari Sheets & Drive...`, 'info');
+
+            // Hapus dari LocalStorage
+            archives = archives.filter(a => a.id !== id);
+            saveArchivesToStorage();
+            renderArchiveTable();
+            renderDashboard();
+
+            // Panggil backend Apps Script untuk menghapus dari Sheets & Drive
+            try {
+                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+                    const payload = {
+                        action: 'deleteSingle',
+                        name: item.name,
+                        fileName: item.fileName,
+                        fileUrl: item.fileUrl
+                    };
+
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                }
+                showToast(`Berhasil menghapus "${item.name}" dari Drive & Sheets!`, 'success');
+            } catch (err) {
+                console.error("Gagal sinkron hapus ke Sheets/Drive:", err);
+                showToast(`Dokumen dihapus dari aplikasi lokal.`, 'info');
+            }
+        }
+
+        // --- FILTER KRITERIA PENGHAPUSAN MASAL ---
+        function handleCriteriaDeleteSearch(e) {
+            e.preventDefault();
+            const filterName = document.getElementById('deleteDocName').value.trim().toLowerCase();
+            const filterCat = document.getElementById('deleteDocCategory').value.trim().toLowerCase();
+            const filterYearStr = document.getElementById('deleteDocYear').value;
+            const filterYear = filterYearStr ? parseInt(filterYearStr, 10) : null;
+
+            pendingDeleteTargets = archives.filter(item => {
+                // Check Nama Dokumen
+                const matchName = !filterName || item.name.toLowerCase().includes(filterName);
+                
+                // Check Kategori
+                const matchCat = !filterCat || item.category.toLowerCase().includes(filterCat);
+
+                // Check Tahun (<= Batas Tahun)
+                let matchYear = true;
+                if (filterYear && item.date) {
+                    const itemYear = new Date(item.date).getFullYear();
+                    matchYear = itemYear <= filterYear;
+                }
+
+                return matchName && matchCat && matchYear;
+            });
+
+            renderDeleteSearchResults();
+        }
+
+        function renderDeleteSearchResults() {
+            const container = document.getElementById('deleteSearchResultsContainer');
+            const tbody = document.getElementById('deleteSearchResultsBody');
+            const badge = document.getElementById('targetDeleteCountBadge');
+            const btnExecute = document.getElementById('btnExecuteBatchDelete');
+
+            container.classList.remove('hidden');
+            tbody.innerHTML = '';
+            badge.textContent = `${pendingDeleteTargets.length} Dokumen`;
+
+            if (pendingDeleteTargets.length === 0) {
+                btnExecute.disabled = true;
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="p-6 text-center text-slate-400 font-medium">
+                            Tidak ada dokumen arsip yang cocok dengan kriteria pencarian di atas.
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            btnExecute.disabled = false;
+
+            pendingDeleteTargets.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-rose-50/40 transition-colors";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-500">${index + 1}</td>
+                    <td class="p-3 font-bold text-slate-800">${escapeHtml(item.name)}</td>
+                    <td class="p-3 font-medium text-slate-600">${formatDateID(item.date)}</td>
+                    <td class="p-3"><span class="px-2 py-0.5 text-[11px] font-bold rounded ${getCategoryBadgeColor(item.category)}">${escapeHtml(item.category)}</span></td>
+                    <td class="p-3 text-slate-500">${item.size}</td>
+                    <td class="p-3 text-center">
+                        ${item.fileUrl && item.fileUrl !== '#' 
+                            ? `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-link"></i> Terhubung Drive</span>`
+                            : `<span class="text-slate-400">Hanya Lokal</span>`}
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function resetDeleteCriteriaForm() {
+            document.getElementById('deleteDocName').value = '';
+            document.getElementById('deleteDocCategory').value = '';
+            document.getElementById('deleteDocYear').value = '';
+            pendingDeleteTargets = [];
+            document.getElementById('deleteSearchResultsContainer').classList.add('hidden');
+        }
+
+        async function confirmExecuteBatchDelete() {
+            if (pendingDeleteTargets.length === 0) return;
+
+            const count = pendingDeleteTargets.length;
+            const confirmMsg = `APAKAH ANDA YAKIN INGIN MENGHAPUS ${count} DOKUMEN SESEOSUSAI KRITERIA INI?\n\n` +
+                               `- Seluruh ${count} dokumen ini akan dihapus dari aplikasi.\n` +
+                               `- Baris data pada Google Sheets akan dihapus.\n` +
+                               `- Berkas file di Google Drive akan dihapus (Folder utama tetap aman).\n\n` +
+                               `Tindakan ini tidak dapat dibatalkan!`;
+
+            if (!confirm(confirmMsg)) return;
+
+            const overlay = document.getElementById('loadingOverlay');
+            const percentText = document.getElementById('loadingPercentText');
+            const subText = document.getElementById('loadingSubText');
+            const circle = document.getElementById('circleProgress');
+            const line = document.getElementById('lineProgressBar');
+
+            overlay.classList.remove('hidden');
+
+            const updateProgress = (val, text) => {
+                percentText.textContent = `${val}%`;
+                circle.setAttribute('stroke-dasharray', `${val}, 100`);
+                line.style.width = `${val}%`;
+                if (text) subText.textContent = text;
+            };
+
+            updateProgress(20, `Memproses penghapusan ${count} dokumen...`);
+
+            // Extract target IDs & URLs
+            const targetIds = pendingDeleteTargets.map(t => t.id);
+            const deletePayloadList = pendingDeleteTargets.map(t => ({
+                name: t.name,
+                fileName: t.fileName,
+                fileUrl: t.fileUrl
+            }));
+
+            // 1. Hapus dari LocalStorage
+            archives = archives.filter(a => !targetIds.includes(a.id));
+            saveArchivesToStorage();
+            renderDashboard();
+
+            updateProgress(60, `Menghapus baris Sheets & file Google Drive...`);
+
+            // 2. Kirim permintaan hapus batch ke Apps Script
+            try {
+                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+                    await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: 'deleteBatch',
+                            items: deletePayloadList
+                        })
+                    });
+                }
+            } catch (err) {
+                console.error("Error batch delete Google Apps Script:", err);
+            }
+
+            updateProgress(100, `Pembersihan Berhasil!`);
+            await new Promise(r => setTimeout(r, 500));
+
+            overlay.classList.add('hidden');
+
+            showToast(`Berhasil menghapus ${count} dokumen dari sistem, Sheets, dan Drive!`, 'success');
+            resetDeleteCriteriaForm();
+        }
+
+        // --- HANDLER UPLOAD FILE & VALIDASI SIZE 300MB ---
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
             if (!file) return;
 
-            // Validation: Max 300 MB
             if (file.size > MAX_FILE_SIZE_BYTES) {
-                showToast(`Ukuran berkas melebihi batas maksimal 300 MB! (${formatBytes(file.size)})`, 'danger');
-                event.target.value = '';
+                showToast(`Ukuran file terlalu besar (${formatBytes(file.size)}). Maksimal ukuran file adalah 300 MB.`, 'danger');
+                resetFileField();
                 return;
             }
 
@@ -932,6 +1280,114 @@
             document.getElementById('progressBar').style.width = '0%';
         }
 
+        // --- SUBMIT FORM ARSIP (SIMPAN KE GOOGLE SHEETS & DRIVE) ---
+        async function handleArchiveSubmit(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('docName').value.trim();
+            const date = document.getElementById('docDate').value;
+            const category = document.getElementById('docCategory').value.trim();
+            const desc = document.getElementById('docDesc').value.trim();
+
+            if (!name || !date || !category || !selectedFile) {
+                showToast('Mohon lengkapi semua bidang yang wajib diisi!', 'danger');
+                return;
+            }
+
+            // Tampilkan progress bar
+            const progressWrapper = document.getElementById('progressWrapper');
+            const progressBar = document.getElementById('progressBar');
+            const progressText = document.getElementById('progressText');
+            progressWrapper.classList.remove('hidden');
+
+            const fileSizeFormatted = formatBytes(selectedFile.size);
+
+            // Membaca file sebagai Base64
+            const reader = new FileReader();
+
+            reader.onprogress = function (event) {
+                if (event.lengthComputable) {
+                    const percent = Math.round((event.loaded / event.total) * 100);
+                    progressBar.style.width = percent + '%';
+                    progressText.textContent = `Membaca berkas... ${percent}%`;
+                }
+            };
+
+            reader.onload = async function () {
+                const base64Data = reader.result.split(',')[1]; // Ambil string base64 saja
+                const fileMimeType = selectedFile.type;
+                const fileName = selectedFile.name;
+
+                progressText.textContent = 'Mengunggah ke Google Drive & Sheets...';
+
+                // Data object lokal sementara
+                const newArchive = {
+                    id: 'arch_' + Date.now(),
+                    name: name,
+                    date: date,
+                    category: category,
+                    desc: desc,
+                    size: fileSizeFormatted,
+                    fileName: fileName,
+                    fileUrl: '#', // placeholder URL sementara
+                    createdAt: new Date().toISOString()
+                };
+
+                // Kirim ke Google Apps Script via POST jika URL tersedia
+                if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
+                    try {
+                        const payload = {
+                            name: name,
+                            date: date,
+                            category: category,
+                            desc: desc,
+                            size: fileSizeFormatted,
+                            fileName: fileName,
+                            fileData: base64Data,
+                            mimeType: fileMimeType
+                        };
+
+                        const response = await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'cors',
+                            headers: {
+                                'Content-Type': 'text/plain;charset=utf-8'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+
+                        const result = await response.json();
+                        if (result.result === 'success' && result.fileUrl) {
+                            newArchive.fileUrl = result.fileUrl;
+                        }
+                    } catch (err) {
+                        console.error('Error pengiriman ke Google Apps Script:', err);
+                        showToast('Berkas tersimpan di sistem lokal. (Backend Apps Script tidak merespons)', 'info');
+                    }
+                }
+
+                // Simpan ke LocalStorage
+                archives.unshift(newArchive);
+                saveArchivesToStorage();
+
+                // Reset Form Upload
+                document.getElementById('archiveForm').reset();
+                document.getElementById('docDate').valueAsDate = new Date();
+                resetFileField();
+
+                showToast('Arsip Berhasil Disimpan!', 'success');
+
+                // Pindah otomatis ke menu Daftar Arsip
+                switchTab('archive');
+            };
+
+            reader.onerror = function () {
+                showToast('Gagal membaca berkas file!', 'danger');
+            };
+
+            reader.readAsDataURL(selectedFile);
+        }
+
         // --- DATA ARCHIVE OPERATIONS ---
         function loadArchives() {
             const stored = localStorage.getItem('sdn22tk_archives');
@@ -951,142 +1407,7 @@
             localStorage.setItem('sdn22tk_archives', JSON.stringify(archives));
         }
 
-        // Helper Konversi File Ke Base64 untuk dikirim via fetch
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(file);
-                reader.onload = () => {
-                    const base64String = reader.result.split(',')[1];
-                    resolve(base64String);
-                };
-                reader.onerror = error => reject(error);
-            });
-        }
-
-        async function handleArchiveSubmit(e) {
-            e.preventDefault();
-
-            if (!selectedFile) {
-                showToast('Silakan pilih berkas yang akan diunggah!', 'danger');
-                return;
-            }
-
-            const name = document.getElementById('docName').value.trim();
-            const date = document.getElementById('docDate').value;
-            const category = document.getElementById('docCategory').value.trim();
-            const desc = document.getElementById('docDesc').value.trim();
-
-            // Progress Bar Simulation
-            const progressWrapper = document.getElementById('progressWrapper');
-            const progressBar = document.getElementById('progressBar');
-            const progressText = document.getElementById('progressText');
-            progressWrapper.classList.remove('hidden');
-
-            for (let percent = 0; percent <= 60; percent += 20) {
-                progressBar.style.width = percent + '%';
-                progressText.textContent = `Mempersiapkan Berkas... ${percent}%`;
-                await new Promise(r => setTimeout(r, 60));
-            }
-
-            let fileDriveUrl = '#';
-            let fileBase64 = null;
-
-            try {
-                // Konversi file ke format Base64
-                fileBase64 = await fileToBase64(selectedFile);
-                progressBar.style.width = '80%';
-                progressText.textContent = `Mengirim Berkas ke Drive... 80%`;
-            } catch (err) {
-                console.error("Gagal memproses file:", err);
-            }
-
-            // Object Record untuk Aplikasi
-            const newArchive = {
-                id: Date.now().toString(),
-                name: name,
-                date: date,
-                category: category,
-                size: formatBytes(selectedFile.size),
-                fileName: selectedFile.name,
-                desc: desc || '-',
-                fileUrl: '#'
-            };
-
-            // Jika Google Apps Script URL telah disiapkan
-            if (SCRIPT_URL && SCRIPT_URL !== 'YOUR_GOOGLE_APPS_SCRIPT_URL') {
-                const payload = {
-                    name: name,
-                    date: date,
-                    category: category,
-                    desc: desc || '-',
-                    size: formatBytes(selectedFile.size),
-                    fileName: selectedFile.name,
-                    mimeType: selectedFile.type,
-                    fileData: fileBase64
-                };
-
-                const driveResultUrl = await sendToGoogleAppsScript(payload);
-                if (driveResultUrl) {
-                    newArchive.fileUrl = driveResultUrl;
-                }
-            }
-
-            progressBar.style.width = '100%';
-            progressText.textContent = `Selesai! 100%`;
-
-            // Save Local
-            archives.unshift(newArchive);
-            saveArchivesToStorage();
-
-            showToast('Dokumen Arsip Berhasil Diunggah & Disimpan!', 'success');
-            
-            // Reset Form & UI
-            document.getElementById('archiveForm').reset();
-            document.getElementById('docDate').valueAsDate = new Date();
-            resetFileField();
-
-            // Pindah langsung ke menu Daftar Arsip setelah sukses upload
-            switchTab('archive');
-        }
-
-        // Send Data & File Base64 to Google Apps Script Endpoint
-        async function sendToGoogleAppsScript(payloadData) {
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                    body: JSON.stringify(payloadData)
-                });
-                const result = await response.json();
-                if (result.result === "success" && result.fileUrl) {
-                    console.log("File berhasil diunggah ke Drive:", result.fileUrl);
-                    return result.fileUrl;
-                }
-            } catch (error) {
-                console.error("Sinkronisasi Google Apps Script:", error);
-            }
-            return null;
-        }
-
-        function deleteArchive(id) {
-            if (confirm('Apakah Anda yakin ingin menghapus data arsip ini dari daftar aplikasi?')) {
-                archives = archives.filter(item => item.id !== id);
-                saveArchivesToStorage();
-                renderArchiveTable();
-                showToast('Data arsip berhasil dihapus.', 'info');
-            }
-        }
-
-        function openOrDownloadFile(fileUrl, fileName) {
-            if (fileUrl && fileUrl !== '#') {
-                window.open(fileUrl, '_blank');
-            } else {
-                showToast(`Simulasi Berkas Local: ${fileName} (Hubungkan Apps Script untuk mengunduh berkas langsung dari Drive)`, 'info');
-            }
-        }
-
-        // --- RENDER FUNCTIONS ---
+        // --- RENDER & PAGINASI TABLE DAFTAR ARSIP ---
         function renderArchiveTable() {
             const tbody = document.getElementById('archiveTableBody');
             const emptyState = document.getElementById('emptyState');
@@ -1095,24 +1416,45 @@
 
             tbody.innerHTML = '';
 
+            // 1. Filtering Data
             let filtered = archives.filter(item => {
                 const matchSearch = item.name.toLowerCase().includes(searchVal) || item.fileName.toLowerCase().includes(searchVal);
                 const matchCategory = !categoryVal || item.category.toLowerCase().includes(categoryVal);
                 return matchSearch && matchCategory;
             });
 
-            if (filtered.length === 0) {
+            const totalItems = filtered.length;
+
+            if (totalItems === 0) {
                 emptyState.classList.remove('hidden');
+                document.getElementById('paginationContainer').classList.add('hidden');
                 return;
             } else {
                 emptyState.classList.add('hidden');
+                document.getElementById('paginationContainer').classList.remove('hidden');
             }
 
-            filtered.forEach((item, index) => {
+            // 2. Pagination Calculations
+            const totalPages = Math.ceil(totalItems / rowsPerPage) || 1;
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = Math.min(startIndex + rowsPerPage, totalItems);
+            const paginatedItems = filtered.slice(startIndex, endIndex);
+
+            // Update Pagination Text Info
+            document.getElementById('pageInfoStart').textContent = totalItems > 0 ? startIndex + 1 : 0;
+            document.getElementById('pageInfoEnd').textContent = endIndex;
+            document.getElementById('pageInfoTotal').textContent = totalItems;
+
+            // 3. Render Table Rows for Current Page
+            paginatedItems.forEach((item, index) => {
+                const actualIndex = startIndex + index + 1;
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-blue-50/50 transition-colors";
                 tr.innerHTML = `
-                    <td class="p-3.5 font-bold text-slate-500">${index + 1}</td>
+                    <td class="p-3.5 font-bold text-slate-500">${actualIndex}</td>
                     <td class="p-3.5">
                         <div class="font-bold text-slate-800">${escapeHtml(item.name)}</div>
                         <div class="text-xs text-slate-400 flex items-center gap-1">
@@ -1145,9 +1487,78 @@
                 `;
                 tbody.appendChild(tr);
             });
+
+            // 4. Render Dynamic Page Numbers
+            renderPaginationButtons(totalPages);
+        }
+
+        function renderPaginationButtons(totalPages) {
+            const pageNumbersContainer = document.getElementById('pageNumbers');
+            const btnPrev = document.getElementById('btnPrevPage');
+            const btnNext = document.getElementById('btnNextPage');
+
+            pageNumbersContainer.innerHTML = '';
+            btnPrev.disabled = currentPage === 1;
+            btnNext.disabled = currentPage === totalPages;
+
+            // Generate page number list with smart range truncation
+            let pagesToDisplay = [];
+            const maxVisibleButtons = 5;
+
+            if (totalPages <= maxVisibleButtons) {
+                for (let i = 1; i <= totalPages; i++) pagesToDisplay.push(i);
+            } else {
+                pagesToDisplay.push(1);
+                let start = Math.max(2, currentPage - 1);
+                let end = Math.min(totalPages - 1, currentPage + 1);
+
+                if (currentPage <= 3) {
+                    start = 2;
+                    end = 4;
+                } else if (currentPage >= totalPages - 2) {
+                    start = totalPages - 3;
+                    end = totalPages - 1;
+                }
+
+                if (start > 2) pagesToDisplay.push('...');
+                for (let i = start; i <= end; i++) pagesToDisplay.push(i);
+                if (end < totalPages - 1) pagesToDisplay.push('...');
+                pagesToDisplay.push(totalPages);
+            }
+
+            pagesToDisplay.forEach(p => {
+                if (p === '...') {
+                    const span = document.createElement('span');
+                    span.className = 'px-2 py-1 text-xs text-slate-400 font-bold';
+                    span.textContent = '...';
+                    pageNumbersContainer.appendChild(span);
+                } else {
+                    const btn = document.createElement('button');
+                    btn.onclick = () => changePage(p);
+                    btn.className = `px-3 py-1.5 rounded-lg text-xs font-bold transition ${
+                        p === currentPage
+                            ? 'bg-blue-600 text-white shadow-md shadow-blue-500/30'
+                            : 'bg-slate-100 hover:bg-blue-100 text-slate-700'
+                    }`;
+                    btn.textContent = p;
+                    pageNumbersContainer.appendChild(btn);
+                }
+            });
+        }
+
+        function changePage(newPage) {
+            currentPage = newPage;
+            renderArchiveTable();
+        }
+
+        function changeRowsPerPage(newRows) {
+            rowsPerPage = parseInt(newRows, 10) || 10;
+            currentPage = 1; // Reset ke halaman 1 setiap ganti jumlah baris
+            renderArchiveTable();
         }
 
         function filterArchives() {
+            currentPage = 1; // Reset ke halaman 1 saat melakukan pencarian
             renderArchiveTable();
         }
 
